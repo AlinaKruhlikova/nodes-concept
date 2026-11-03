@@ -297,7 +297,7 @@ swap.el.querySelectorAll('.presets button').forEach(b => b.addEventListener('cli
 swap.hideNodes();
 onSeen(swap.el, () => setTimeout(() => { swap.drawIn(); setTimeout(() => swap.pulse(), 900); }, swap.appear()));
 
-// ---------- 4. Кульминация: запустить рецепт ----------
+// ---------- 4. Кульминация: запустить сценарий ----------
 // Ноды по очереди: в очереди → работает → готово. Данные идут по цепочке,
 // в конце собираются три формата с разной композицией. Картинки подготовлены заранее — это видно в плашке.
 const run = new Graph(document.getElementById('g-run'));

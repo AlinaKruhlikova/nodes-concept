@@ -1,7 +1,7 @@
-// Снэпбилд · ноды — первый экран «стена, полоска, рецепт» (3.11, идея Алины)
+// Снэпбилд · ноды — первый экран «стена, полоска, сценарий» (3.11, идея Алины)
 // Стена материалов «Севеи» плывёт во всю ширину, оффер на плашке по центру.
 // Прокрутка или первое наведение — плашка уезжает наверх и становится тонкой полоской под шапкой.
-// Наведение на картинку — её рецепт рядом; нажатие — картинка разбирается на ноды, в «Продукте» можно сменить продукт.
+// Наведение на картинку — её сценарий рядом; нажатие — картинка разбирается на ноды, в «Продукте» можно сменить продукт.
 (() => {
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const phone = () => innerWidth < 768;
@@ -42,7 +42,8 @@ function buildWall() {
 let c = 0, touched = false, mode = 'wall';
 function plateFrame() {
   const W = hero.clientWidth, H = hero.clientHeight, cw = Math.min(1360, W - (phone() ? 32 : 80)), L = (W - cw) / 2;
-  let to = Math.max(touched ? 1 : 0, clamp(scrollY / 160)); if (mode !== 'wall') to = 1;
+  // оффер сворачивается только прокруткой (наведение больше не сворачивает), плавно за 40 % высоты экрана
+  let to = clamp(scrollY / (innerHeight * .4)); if (mode !== 'wall') to = 1;
   c += (to - c) * (reduce ? 1 : .14);
   const k = ease(clamp(c)), fw = Math.min(880, W - 32), fh = pf.offsetHeight, bh = phone() ? 52 : 64, top = 8;
   // полоска закреплена под шапкой, пока виден первый экран; с началом второго блока уезжает вместе с ним
@@ -56,9 +57,9 @@ function plateFrame() {
   return top + bh;
 }
 
-// ---------- рецепт при наведении ----------
+// ---------- сценарий при наведении ----------
 const rec = document.getElementById('rec'), rsvg = rec.querySelector('svg');
-let hover = null, stripBottom = 72, pinBottom = 72; // stripBottom — низ полоски в верхнем положении (для раскладки рецепта), pinBottom — где она сейчас
+let hover = null, stripBottom = 72, pinBottom = 72; // stripBottom — низ полоски в верхнем положении (для раскладки сценария), pinBottom — где она сейчас
 function place(tile) {
   const o = hero.getBoundingClientRect(), r = tile.getBoundingClientRect(), [pk, preset] = S[tile.dataset.s], prod = P[pk];
   if (rec.dataset.s !== tile.dataset.s) {
@@ -82,10 +83,11 @@ function place(tile) {
 }
 const clearHover = () => { if (hover) hover.classList.remove('is'); hover = null; wall.classList.remove('focus'); rec.classList.remove('on'); };
 wall.addEventListener('pointerover', e => { const t = e.target.closest('.tile'); if (!t || t === hover || mode !== 'wall') return;
-  touched = true; if (hover) hover.classList.remove('is'); hover = t; t.classList.add('is'); wall.classList.add('focus'); rec.classList.add('on'); place(t); });
+  if (c < .95) return; // пока оффер развёрнут, рецепт плитки не показываем: оффер читают первым
+  if (hover) hover.classList.remove('is'); hover = t; t.classList.add('is'); wall.classList.add('focus'); rec.classList.add('on'); place(t); });
 wall.addEventListener('pointerleave', clearHover);
 
-// ---------- рецепт картинки: нажатие → картинка разбирается на ноды ----------
+// ---------- сценарий картинки: нажатие → картинка разбирается на ноды ----------
 const R = document.getElementById('recipe'), N = {}; R.querySelectorAll('.n').forEach(n => (N[n.dataset.id] = n));
 const t2 = document.getElementById('t2'), svg = document.getElementById('wires'), NSV = 'http://www.w3.org/2000/svg';
 const ORDER = ['prod', 'ref', 'prompt', 'preset', 'brand'];
@@ -111,12 +113,12 @@ $('r-swap').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b || b.dataset.p === cur.pk) return;
   const scene = sceneOf(b.dataset.p, cur.preset); fill(scene, true);
   sig0 = performance.now(); $('r-score').textContent = 'проверяю…';
-  // сигнал проходит рецепт, и картинка пересобирается
+  // сигнал проходит сценарий, и картинка пересобирается
   setTimeout(() => { const img = $('r-img'), res = N.res; res.style.setProperty('--ph', res.querySelector('.pic').offsetHeight + 'px');
     res.classList.remove('gen'); void res.offsetWidth; res.classList.add('gen'); img.style.opacity = 0;
     setTimeout(() => { img.src = `img/sevea/${scene}.webp`; img.alt = P[S[scene][0]][1] + ', ' + S[scene][1]; img.style.opacity = 1; $('r-score').textContent = score(scene); }, reduce ? 0 : 300); }, reduce ? 0 : 900);
 });
-// в рецепте кнопка полоски ведёт обратно к стене — одна кнопка вместо двух
+// в сценарии кнопка полоски ведёт обратно к стене — одна кнопка вместо двух
 const pbHint = $('pb-hint'), pbBtn = $('pb-btn');
 const barText = on => { pbHint.innerHTML = on ? 'сценарий одной картинки из&nbsp;стены' : 'наведите&nbsp;— покажем сценарий, нажмите&nbsp;— разберём';
   pbBtn.textContent = on ? (phone() ? 'Назад' : 'Все материалы') : (phone() ? 'Разобрать' : 'Разобрать картинку'); };

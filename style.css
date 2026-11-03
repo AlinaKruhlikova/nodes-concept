@@ -376,7 +376,7 @@ button.shot{cursor:zoom-out}
 @media (max-width:1199px){.halves-txt{grid-column:1 / span 5}.halves .canvas{grid-column:6 / span 7}}
 @media (max-width:767px){.halves{display:flex;flex-direction:column;align-items:stretch}.halves .canvas{width:100%}}
 
-/* ===== 4. Кульминация «Запустите рецепт» (3.11) ===== */
+/* ===== 4. Кульминация «Запустите сценарий» (3.11) ===== */
 .run-h{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--s3);align-items:end;margin-bottom:var(--s5)}
 .run-h h2{grid-column:1 / span 6}
 .run-h-r{grid-column:7 / span 6;display:flex;flex-direction:column;align-items:flex-start;gap:var(--s3)}
@@ -427,7 +427,7 @@ button.shot{cursor:zoom-out}
 .fm-banner .fm-t{position:relative;grid-column:1;grid-row:1;align-self:center;padding:0 0 0 14px;gap:10px}
 .fm-banner .fm-t b{font-size:17px;line-height:1.1;font-weight:600;letter-spacing:-.01em}
 .fm-btn{align-self:flex-start;background:#15171C;color:#fff;font-size:12px;font-weight:600;padding:7px 14px;border-radius:999px}
-/* пока рецепт не запущен — пустые рамки форматов */
+/* пока сценарий не запущен — пустые рамки форматов */
 .fm.empty .fi{background:var(--soft)!important;outline:1.5px dashed var(--grid);outline-offset:-1.5px}
 .fm.empty .fi>*{opacity:0}
 .fm .fi>*{transition:opacity .5s var(--ease)}
@@ -546,7 +546,7 @@ button.shot{cursor:zoom-out}
 .demo-tag{margin-left:auto;color:var(--mute)}
 .demo-tag b{font-weight:500;color:var(--on-accent);background:var(--accent);border-radius:999px;padding:3px 10px;margin-right:6px}
 @media (max-width:767px){.demo-tag{font-size:11px}.demo-tag b{display:inline-block;margin:0 0 4px}}
-/* ревью 3.11: шапка окна — название рецепта, без «вкладок», которые не нажимаются */
+/* ревью 3.11: шапка окна — название сценария, без «вкладок», которые не нажимаются */
 .win-tab.is{background:none;padding:8px 4px;font-weight:600;color:var(--ink)}
 .win-hint{margin-left:auto;color:var(--mute)}
 @media (max-width:767px){.win-hint{display:none}}
@@ -690,7 +690,7 @@ button.shot{cursor:zoom-out}
 .fm-banner .fm-t b,.fm-banner .fm-name{font-size:22px;line-height:1.02;font-weight:500}
 .fm-banner .fm-sub{color:#5A6573}
 .fm-banner .fm-btn{margin-top:6px;background:#1F2A36;color:#fff}
-/* кнопки запуска — на полотне рецепта, в шапке окна */
+/* кнопки запуска — на полотне сценария, в шапке окна */
 #run .win-bar .run-btns{margin-left:var(--s2);gap:var(--s1)}
 #run .win-bar .btn{padding:8px 16px;font-size:14px}
 @media (max-width:767px){#run .win-bar{flex-wrap:wrap;row-gap:var(--s1)}#run .win-bar .run-btns{margin-left:0;width:100%}}
@@ -798,7 +798,7 @@ button.shot{cursor:zoom-out}
 .blk-h{position:relative}
 .case{width:calc((100% - 11*24px)/12*4 + 3*24px);background:var(--surface);border-radius:12px;padding:var(--s3);
   box-shadow:0 0 0 1px color-mix(in srgb,var(--ink) 10%,transparent)}
-.blk-h .case{position:absolute;right:0;bottom:0}
+.blk-h .case{position:absolute;right:0;bottom:0;top:var(--num-top,0);display:flex;flex-direction:column;justify-content:space-between} /* по высоте всего заголовка: верх цифры — низ пояснения */
 .halves-txt .case{width:100%;margin-top:var(--s5)}
 .case-im{display:flex;align-items:center;gap:var(--s1)}
 .case-im img{width:64px;height:80px;object-fit:cover;border-radius:8px}
@@ -833,6 +833,16 @@ button.shot{cursor:zoom-out}
 /* зелёная шапка — только у ноды, с которой работают: выбрана, работает или в фокусе урока */
 .n-dec:not(.sel):not(.busy):not(.act) .node-h{background:var(--surface);color:var(--ink);border-bottom-color:var(--grid)}
 .n-dec:not(.sel):not(.busy):not(.act) .st{background:var(--accent)}
+/* 3.11 (отзыв): Бренд-директор увереннее — больше воздуха внутри; пустой результат в 01 тише и с подсказкой-проводом */
+.node[data-id=brand] .node-b{padding-top:16px;padding-bottom:18px}
+#link-state{background:color-mix(in srgb,var(--soft) 45%,var(--surface));outline:1.5px dashed var(--grid);outline-offset:-1.5px;align-items:center;text-align:center}
+#link-state b{color:var(--mute)}
+.st-hint{width:72px;height:24px;margin-bottom:var(--s1)}
+.st-hint circle{fill:var(--surface);stroke:var(--wire);stroke-width:1.5}
+.st-hint path{fill:none;stroke:var(--wire);stroke-width:1.5;stroke-dasharray:4 4;animation:ghost-dash 1s linear infinite}
+@media (prefers-reduced-motion:reduce){.st-hint path{animation:none}}
+.foot-tg{color:var(--ink);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;white-space:nowrap}
+.foot-tg:hover{color:var(--accent)}
 #r-prompt::before{content:"«"}#r-prompt::after{content:"»"}
 /* 3.11: без трёх точек macOS в шапках окон — штамп AI-редакторов */
 .win-dots{display:none}
