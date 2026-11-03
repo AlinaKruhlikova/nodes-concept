@@ -45,7 +45,10 @@ function plateFrame() {
   let to = Math.max(touched ? 1 : 0, clamp(scrollY / 160)); if (mode !== 'wall') to = 1;
   c += (to - c) * (reduce ? 1 : .14);
   const k = ease(clamp(c)), fw = Math.min(880, W - 32), fh = pf.offsetHeight, bh = phone() ? 52 : 64, top = 8;
-  const x = lerp((W - fw) / 2, L, k), y = lerp((H - fh) / 2, top, k), w = lerp(fw, cw, k), h = lerp(fh, bh, k);
+  // полоска закреплена под шапкой, пока виден первый экран; с началом второго блока уезжает вместе с ним
+  const head = document.querySelector('.top').offsetHeight, pin = Math.max(top, Math.min(H - bh - top, head + top - hero.getBoundingClientRect().top));
+  const x = lerp((W - fw) / 2, L, k), y = lerp((H - fh) / 2, pin, k), w = lerp(fw, cw, k), h = lerp(fh, bh, k);
+  pinBottom = y + h;
   Object.assign(plate.style, { transform: `translate(${x}px,${y}px)`, width: w + 'px', height: h + 'px', borderRadius: lerp(24, 999, k) + 'px' });
   pf.style.width = fw + 'px'; pf.style.left = (w - fw) / 2 + 'px'; pf.style.top = (h - fh) / 2 + 'px';
   pf.style.opacity = 1 - clamp(k * 2.2); pf.style.visibility = k > .5 ? 'hidden' : '';
@@ -55,7 +58,7 @@ function plateFrame() {
 
 // ---------- рецепт при наведении ----------
 const rec = document.getElementById('rec'), rsvg = rec.querySelector('svg');
-let hover = null, stripBottom = 72;
+let hover = null, stripBottom = 72, pinBottom = 72; // stripBottom — низ полоски в верхнем положении (для раскладки рецепта), pinBottom — где она сейчас
 function place(tile) {
   const o = hero.getBoundingClientRect(), r = tile.getBoundingClientRect(), [pk, preset] = S[tile.dataset.s], prod = P[pk];
   if (rec.dataset.s !== tile.dataset.s) {
@@ -69,7 +72,7 @@ function place(tile) {
   ns.forEach(n => (n.style.width = w + 'px'));
   const tl = r.left - o.left, tr = r.right - o.left, left = tl - gap - w >= 8, x = left ? tl - gap - w : Math.min(tr + gap, o.width - 8 - w);
   const hs = ns.map(n => n.offsetHeight), Hh = hs.reduce((a, b) => a + b, 0) + 2 * vg, ty = r.top - o.top + r.height / 2;
-  let y = Math.max(stripBottom + 16, Math.min(o.height - 16 - Hh, ty - Hh / 2)); const bx = [];
+  let y = Math.max(pinBottom + 16, Math.min(o.height - 16 - Hh, ty - Hh / 2)); const bx = [];
   ns.forEach((n, i) => { n.style.transform = `translate(${x}px,${y}px)`; bx.push([y, hs[i]]); y += hs[i] + vg; });
   let d = '';
   for (let i = 0; i < 2; i++) d += `<path d="M${x + w / 2} ${bx[i][0] + bx[i][1]} L${x + w / 2} ${bx[i + 1][0]}"/>`;
