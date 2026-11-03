@@ -738,6 +738,10 @@ button.shot{cursor:zoom-out}
 .fmts.tone-light .fm-banner .fm-btn{background:#1F2A36;color:#fff}
 .fmts.own .fm-story .fi,.fmts.own .fm-banner .fi{background:#F3EBDD}
 .fm-card .fi img{object-position:50% 72%} /* в карточке видно средство вместе с подиумом */
+/* 3.11: карточка берёт сцену видео-сторис — средство там по центру, кадрируем на него вместе с подиумом */
+.fmts:not(.own) .fm-card .fi img{object-position:50% 76%}
+.fmts[data-fmt="renew"]:not(.own) .fm-card .fi img{object-position:50% 56%} /* у сыворотки пипетка выше — не обрезаем */
+.q-prompt{font-weight:400;color:var(--mute)}
 
 /* 3.11: картинка-нода тоже в карточке, как остальные (Алина: «все в контейнере, а эта нет»; подпись над картинкой — как в редакторе Снэпбилда) */
 .node.n-img{background:var(--surface);box-shadow:0 0 0 1px color-mix(in srgb,var(--ink) 12%,transparent)}
@@ -769,5 +773,66 @@ button.shot{cursor:zoom-out}
 .canvas.pre .node{opacity:0;transform:translateY(12px)}
 .canvas.pre .node.in{opacity:1;transform:none}
 .canvas.pre svg.wires{opacity:0}
+/* 3.11: сторис в 04 — видео (Снэпбилд генерирует и видео): наезд камеры 6 с, текст появляется по ходу, полоса времени */
+.vid-bar{position:absolute;left:8px;right:8px;top:6px;height:2px;border-radius:2px;background:rgba(255,255,255,.35);overflow:hidden;opacity:0;z-index:2}
+.vid-bar i{display:block;height:100%;background:#fff;transform-origin:left;transform:scaleX(0)}
+.fm-story.playing .vid-bar{opacity:1}
+.fm-story.playing .vid-bar i{animation:vid-bar 6s linear infinite}
+.fm-story.playing .fi img{animation:vid-cam 6s ease-in-out infinite}
+.fm-story.playing .fm-t{animation:vid-txt 6s var(--ease) infinite}
+@keyframes vid-bar{to{transform:scaleX(1)}}
+@keyframes vid-cam{0%{transform:scale(1)}100%{transform:scale(1.14) translateY(-3%)}}
+@keyframes vid-txt{0%,18%{opacity:0;transform:translateY(10px)}34%,92%{opacity:1;transform:none}100%{opacity:0}}
+/* видео видно и до запуска: в пустой рамке значок воспроизведения, на готовом ролике — маленький значок сверху справа */
+.vid-play{position:absolute;z-index:3;border-radius:50%;display:none}
+.vid-play::after{content:"";position:absolute;left:50%;top:50%;border-style:solid;border-color:transparent transparent transparent currentColor}
+.fm-story.empty .fi>.vid-play{display:block;opacity:1;left:50%;top:50%;width:48px;height:48px;margin:-24px 0 0 -24px;border:1.5px solid var(--mute);color:var(--mute)}
+.fm-story.empty .vid-play::after{border-width:8px 0 8px 13px;margin:-8px 0 0 -5px} /* треугольник сдвинут вправо оптически */
+.fm-story.playing .vid-play{display:block;right:8px;top:16px;width:24px;height:24px;background:rgba(15,26,56,.55);color:#fff}
+.fm-story.playing .vid-play::after{border-width:5px 0 5px 8px;margin:-5px 0 0 -3px}
+#hero .tile:has(.tg.vid) img{animation:vid-cam 6s ease-in-out infinite alternate}
+@media (prefers-reduced-motion:reduce){#hero .tile:has(.tg.vid) img{animation:none}}
+#hero .tile .tg.vid::before{content:"";display:inline-block;margin-right:6px;border-style:solid;border-width:4px 0 4px 7px;border-color:transparent transparent transparent currentColor}
+@media (prefers-reduced-motion:reduce){.fm-story.playing .vid-bar i,.fm-story.playing .fi img,.fm-story.playing .fm-t{animation:none}}
+/* 3.11: «пример из жизни» в пустом месте блока — отвечает на «для чего это» (отзыв Насти) */
+.blk-h{position:relative}
+.case{width:calc((100% - 11*24px)/12*4 + 3*24px);background:var(--surface);border-radius:12px;padding:var(--s3);
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--ink) 10%,transparent)}
+.blk-h .case{position:absolute;right:0;bottom:0}
+.halves-txt .case{width:100%;margin-top:var(--s5)}
+.case-im{display:flex;align-items:center;gap:var(--s1)}
+.case-im img{width:64px;height:80px;object-fit:cover;border-radius:8px}
+.case-im span{color:var(--mute);font-size:16px}
+.case p{margin-top:var(--s2);font-size:16px;line-height:1.5;color:var(--mute)}
+.case p b{font-weight:600;color:var(--ink)}
+@media (max-width:1199px){.blk-h .case{position:static;margin-top:var(--s4)}.case{width:100%;max-width:440px}}
+/* 3.11: проба — блок 03 тёмный хвойный, окно остаётся светлым и становится главным пятном (?dark03) */
+#swap.dark{background:#0B2B1E;color:#F1F6F3}
+#swap.dark .num{-webkit-text-stroke-color:#F1F6F3}
+#swap.dark .halves-txt .lead{color:#A9C3B6}
+#swap.dark .case{background:rgba(255,255,255,.06);box-shadow:0 0 0 1px rgba(255,255,255,.14)}
+#swap.dark .case p{color:#A9C3B6}#swap.dark .case p b{color:#F1F6F3}#swap.dark .case-im span{color:#A9C3B6}
+/* окно приглушено в тон блока: тёмное полотно, светлые остаются только ноды */
+#swap.dark{--wire:#6F8D7F}
+#swap.dark .win{background:#12382A;box-shadow:0 0 0 1px rgba(255,255,255,.10);color:var(--ink)}
+#swap.dark .win-bar{background:transparent;border-bottom-color:rgba(255,255,255,.10)}
+#swap.dark .win-tab.is{color:#F1F6F3}#swap.dark .win-hint{color:#A9C3B6}
+#swap.dark .node{box-shadow:none}
+/* карточки нод тоже приглушены: серо-зелёные вместо белых, внутренние плашки на тон темнее (текст ≥ 4,5:1) */
+#swap.dark .win{--surface:#DCE6E0;--soft:#CBD9D1;--grid:#C4D3CA;--accent-soft:#C8E2D3;--accent-line:#AFCFBC}
+/* 3.11: ноды по роли (nodes.js) — промпт цитатой, пресет палитрой, проверки чек-листом */
+.node-b .quote{font-size:15px;line-height:1.4;color:var(--ink)}
+.pal{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px}
+.pal b{font-weight:500;font-size:14px}
+.pal .mono{width:100%}
+.sws{display:inline-flex;flex:none}
+.sws i{width:14px;height:14px;border-radius:50%;box-shadow:0 0 0 1.5px var(--surface)}
+.sws i+i{margin-left:-4px}
+.presets button{justify-content:flex-start;gap:10px}
+.presets button::after{margin-left:auto}
+/* зелёная шапка — только у ноды, с которой работают: выбрана, работает или в фокусе урока */
+.n-dec:not(.sel):not(.busy):not(.act) .node-h{background:var(--surface);color:var(--ink);border-bottom-color:var(--grid)}
+.n-dec:not(.sel):not(.busy):not(.act) .st{background:var(--accent)}
+#r-prompt::before{content:"«"}#r-prompt::after{content:"»"}
 /* 3.11: без трёх точек macOS в шапках окон — штамп AI-редакторов */
 .win-dots{display:none}

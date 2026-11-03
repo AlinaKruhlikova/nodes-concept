@@ -313,7 +313,7 @@ function runReset() {
   run.el.classList.remove('live', 'ran');
   Object.values(run.nodes).forEach(n => n.classList.remove('busy', 'done'));
   rSteps.forEach(li => setStep(li, 'wait'));
-  rFrames.forEach(f => f.classList.add('empty'));
+  rFrames.forEach(f => f.classList.add('empty')); rFrames[0].classList.remove('playing');
   rSt.textContent = 'ждёт запуска'; rCount.textContent = '0 из 3';
   rGo.textContent = 'Запустить сценарий';
   // новый запуск или другой продукт — главной снова становится «Запустить»
@@ -324,6 +324,9 @@ function choose(b) {
   pick = b;
   rProds.querySelectorAll('[role="radio"]').forEach(x => x.setAttribute('aria-checked', x === b));
   rName.textContent = b.dataset.name;
+  // фон сцены задаёт промпт — показываем его в шагах, чтобы было видно, откуда новая сцена
+  document.getElementById('run-prompt').textContent = b.dataset.prompt ? '· ' + b.dataset.prompt : '· фон как на фото';
+  document.getElementById('fmts').dataset.fmt = b.dataset.fmt || '';
   runReset();
 }
 async function runRecipe() {
@@ -352,7 +355,9 @@ async function runRecipe() {
     f.classList.remove('empty');
     // у каждого формата своя сцена (сгенерирована отдельно, средство — настоящее); своё фото — одно на все форматы
     const kind = f.classList.contains('fm-story') ? 'story' : f.classList.contains('fm-card') ? 'card' : 'banner';
-    await regen(f.querySelector('.fi'), f.querySelector('img'), pick.dataset.fmt ? `img/sevea/fmt/${pick.dataset.fmt}-${kind}.webp` : src);
+    // карточка — та же сцена, что у видео-сторис (одна съёмка, разные форматы; отдельная светлая сцена карточки выбивалась)
+    await regen(f.querySelector('.fi'), f.querySelector('img'), pick.dataset.fmt ? `img/sevea/fmt/${pick.dataset.fmt}-${kind === 'card' ? 'story' : kind}.webp` : src);
+    if (kind === 'story') f.classList.add('playing'); // сторис — видео: наезд камеры, текст по ходу ролика, полоса времени
     rCount.textContent = ++k + ' из 3';
   }
   setStep(rSteps[4], 'done');

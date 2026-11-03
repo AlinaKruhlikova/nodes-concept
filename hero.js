@@ -21,7 +21,7 @@ const S = { s13: ['mask', 'Северное сияние'], s00: ['gel', 'Гра
   s12: ['mask', 'Северное сияние'], s28: ['anti', 'Текстура'], s20: ['stick', 'Морошка'], s23: ['hand', 'Текстура'], s15: ['mask', 'Морошка'], s26: ['renew', 'Текстура'], s17: ['mask', 'Текстура'] };
 const PROMPT = { 'Северное сияние': 'Средство на камне, за ним северное сияние и горы гравюрой', 'Морошка': 'Средство на камне среди морошки и мха, тёплый свет',
   'Гравюра': 'Средство на снегу, за ним горы и озеро гравюрой', 'Северные травы': 'Средство среди северных цветов и трав, мягкий свет', 'Текстура': 'Средство рядом с мазком текстуры на бежевом камне' };
-const FMT = ['сторис', 'карточка', 'баннер', 'пост'], keys = Object.keys(S);
+const FMT = ['сторис', 'карточка', 'видео', 'баннер', 'пост'], keys = Object.keys(S);
 const sceneOf = (prod, preset) => keys.find(k => S[k][0] === prod && S[k][1] === preset);
 const score = k => (96 + k.charCodeAt(2) % 4) + ' %';
 
@@ -33,7 +33,7 @@ function buildWall() {
     const col = document.createElement('div'); col.className = 'col'; wall.appendChild(col);
     const mine = keys.filter((_, i) => i % n === c);
     [...mine, ...mine, ...mine, ...mine].forEach((k, j) => col.insertAdjacentHTML('beforeend',
-      `<button class="tile" type="button" data-s="${k}" aria-label="Сценарий:${P[S[k][0]][1]}, ${S[k][1]}"><img src="img/sevea/w/${k}.webp" alt="" decoding="async"><span class="tg">${FMT[(j + c) % 4]}</span></button>`));
+      `<button class="tile" type="button" data-s="${k}" aria-label="Сценарий:${P[S[k][0]][1]}, ${S[k][1]}"><img src="img/sevea/w/${k}.webp" alt="" decoding="async"><span class="tg${FMT[(j + c) % FMT.length] === 'видео' ? ' vid' : ''}">${FMT[(j + c) % FMT.length]}</span></button>`));
     cols.push({ el: col, y: -(c * 130) - 300, v: (c % 2 ? .24 : -.24) * (1 + (c % 3) * .12) });
   }
 }
