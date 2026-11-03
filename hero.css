@@ -1,0 +1,83 @@
+/* Первый экран «стена, полоска, рецепт» (3.11, идея Алины). Всё внутри #hero, чтобы не задеть ноды ниже по странице.
+   Стена материалов во всю ширину, оффер на плашке по центру → при прокрутке или первом наведении — тонкая полоска под шапкой.
+   Наведение — рецепт картинки; нажатие — картинка разбирается на ноды, в «Продукте» можно сменить продукт. */
+#hero{position:relative;height:calc(100svh - 72px);min-height:720px;overflow:hidden;padding:0}
+#hero .wall{position:absolute;left:0;right:0;top:-40px;bottom:-40px;display:grid;gap:var(--s3);padding:0 var(--s4);z-index:1}
+#hero .col{display:flex;flex-direction:column;gap:var(--s3);will-change:transform}
+#hero .tile{border-radius:12px;overflow:hidden;aspect-ratio:4/5;position:relative;cursor:pointer;box-shadow:0 0 0 1px rgba(21,23,28,.08);transition:transform .4s var(--ease),box-shadow .3s,opacity .4s;
+  border:0;padding:0;background:var(--soft);width:100%;display:block}
+#hero .tile img{width:100%;height:100%;object-fit:cover;display:block}
+#hero .tile .tg{position:absolute;left:8px;bottom:8px;background:rgba(255,255,255,.92);color:var(--ink);border-radius:999px;padding:4px 8px;font:400 12px/1 var(--f-mono)}
+#hero .tile:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#hero .wall.focus .tile{opacity:.3}
+#hero .wall .tile.is{opacity:1!important;transform:scale(1.04);box-shadow:0 0 0 3px var(--accent),0 0 0 4.5px var(--ink);z-index:2}
+
+/* плашка оффера */
+#hero .plate{position:absolute;left:0;top:0;z-index:8;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(12px);
+  box-shadow:0 0 0 1px rgba(21,23,28,.10),0 2px 4px rgba(21,23,28,.06),0 24px 48px -32px rgba(21,23,28,.3);overflow:hidden}
+#hero .pf{position:absolute;left:0;top:0;padding:var(--s5);text-align:center;display:flex;flex-direction:column;align-items:center}
+#hero .pf h1{font-size:clamp(40px,5vw,72px);margin:0}
+#hero .pf .lead{font-size:20px;line-height:1.4;color:var(--mute);margin-top:var(--s3)}
+#hero .pf .lead b{font-weight:500;color:var(--ink)}
+#hero .pf .btn{margin-top:var(--s4)}
+#hero .pf .mono{margin-top:var(--s2);color:var(--mute)}
+#hero .pb{position:absolute;inset:0;display:flex;align-items:center;gap:var(--s3);padding:0 8px 0 var(--s3);white-space:nowrap}
+#hero .pb b{font-weight:600;font-size:20px;letter-spacing:-.02em}
+#hero .pb .mono{color:var(--mute);flex:1;overflow:hidden;text-overflow:ellipsis}
+#hero .pb .btn{padding:10px 16px;font-size:14px}
+
+/* ноды рецепта */
+#hero .n{position:absolute;left:0;top:0;width:200px;background:var(--surface);border-radius:12px;box-shadow:0 0 0 1px rgba(21,23,28,.12),0 1px 2px rgba(21,23,28,.05);will-change:transform;z-index:5}
+#hero .n-h{display:flex;align-items:center;gap:var(--s1);padding:9px 12px;border-bottom:1px solid var(--grid);font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden}
+#hero .n-h i{width:7px;height:7px;border-radius:50%;background:var(--ink);flex:none}
+#hero .n-h .mono{margin-left:auto;font-weight:400;color:var(--mute)}
+#hero .n.dec .n-h{background:var(--accent);border-bottom:0;border-radius:12px 12px 0 0}
+#hero .n.dec .n-h .mono{color:var(--ink)}
+#hero .n-b{padding:10px 12px 12px;font:400 12px/1.45 var(--f-mono);color:var(--mute)}
+#hero .n-b b{display:block;font:600 16px/1.2 var(--f-text);color:var(--ink);margin-top:4px}
+#hero .n .im{margin:8px;border-radius:8px;overflow:hidden;aspect-ratio:1/1;background:var(--soft)}
+#hero .n .im img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .3s}
+#hero .pt{position:absolute;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:var(--bg);border:1.5px solid var(--ink)}
+#hero .pt.in{left:-6px}#hero .pt.out{right:-6px}
+#hero svg.w{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:5}
+#hero .w path{fill:none;stroke:var(--ink);stroke-width:1.5}
+#hero .w circle{fill:var(--accent);stroke:var(--ink);stroke-width:1.5}
+#hero .rec{position:absolute;inset:0;z-index:6;pointer-events:none;opacity:0;transition:opacity .25s}
+#hero .rec.on{opacity:1}
+#hero .rec .n .im{margin:6px}
+#hero .rec .n-h .mono{display:none}
+#hero .recipe{display:block;margin:0;list-style:none}
+#hero .recipe .n{opacity:0;pointer-events:none}
+#hero .recipe.live .n{pointer-events:auto}
+#hero .res{width:auto;display:flex;flex-direction:column;overflow:hidden}
+#hero .res .n-h{flex:none}
+#hero .res .pic{flex:1;position:relative;overflow:hidden}
+#hero .res .pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .35s}
+#hero .res .pic::after{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:var(--accent);box-shadow:0 0 12px var(--accent);opacity:0}
+#hero .res.gen .pic::after{opacity:1;animation:hscan .9s linear}
+@keyframes hscan{from{transform:translateY(0)}to{transform:translateY(var(--ph,400px))}}
+#hero .res.lit{box-shadow:0 0 0 3px var(--accent),0 0 0 4.5px var(--ink)}
+#hero .swp{display:flex;flex-wrap:wrap;gap:6px;padding:0 8px 10px}
+#hero .swp button{width:36px;height:36px;border-radius:8px;overflow:hidden;border:0;padding:0;cursor:pointer;box-shadow:0 0 0 1px rgba(21,23,28,.14);background:var(--soft)}
+#hero .swp button img{width:100%;height:100%;object-fit:cover;display:block}
+#hero .swp button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--accent),0 0 0 3.5px var(--ink)}
+#hero .swp-t{padding:0 12px 6px;font:400 12px/1.3 var(--f-mono);color:var(--mute)}
+#hero .t2{position:absolute;left:0;top:0;z-index:7;opacity:0;pointer-events:none}
+#hero .t2 h2{font-size:48px;margin:0}
+#hero .t2 p{font-size:20px;line-height:1.4;color:var(--mute);margin-top:var(--s2)}
+
+@media (max-width:767px){
+  #hero{min-height:760px}
+  #hero .wall{gap:var(--s1);padding:0 var(--s1)}#hero .col{gap:var(--s1)}
+  #hero .pf{padding:var(--s4) var(--s3)}#hero .pf .lead{font-size:17px}#hero .pf .lead br{display:none}
+  #hero .pb{gap:var(--s2);padding:0 6px 0 var(--s2);justify-content:space-between}#hero .pb b{font-size:14px;overflow:hidden;text-overflow:ellipsis}#hero .pb .mono{display:none}
+  #hero .n{width:132px}#hero .n-h{font-size:12px;padding:7px 8px}#hero .n-h .mono{display:none}#hero .n-b{padding:8px;font-size:12px}#hero .n .im{margin:6px}
+  #hero .swp button{width:28px;height:28px}
+  #hero .t2 h2{font-size:32px}#hero .t2 p{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){#hero .tile{transition:none}#hero .res.gen .pic::after{animation:none}}
+
+/* цвет: шапки нод-решений — светлый фон и текстовый шаг акцента */
+#hero .n.dec .n-h{background:var(--accent-soft);color:var(--accent-text);border-bottom:1px solid var(--accent-line)}
+#hero .n.dec .n-h .mono{color:var(--accent-text);opacity:.75}
+#hero .n.dec .n-h i{background:var(--accent-text)}

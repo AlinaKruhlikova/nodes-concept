@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Снэпбилд · Ноды</title>
+<meta name="description" content="Концепт страницы нодовой системы Снэпбилда: разберите картинку на ноды и посмотрите, как она собрана.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Cormorant+Garamond:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="hero.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-in">
+    <a class="logo" href="#hero">Снэпбилд <span class="mono">/ ноды</span></a>
+    <nav class="top-nav">
+      <a class="btn btn-sm btn-ghost" href="https://snapbuild.ru/" target="_blank" rel="noopener">Попробовать</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- 1. Первый экран -->
+<section id="hero">
+  <div class="wall" id="wall"></div>
+  <div class="rec" id="rec"><svg class="w" aria-hidden="true"></svg></div>
+
+  <div class="recipe" id="recipe">
+    <svg class="w" id="wires" aria-hidden="true"></svg>
+    <div class="n" data-id="prod"><div class="n-h"><i></i>Продукт<span class="mono">image</span></div><div class="im"><img id="r-prod" alt=""></div>
+      <p class="swp-t">поменяйте продукт:</p><div class="swp" id="r-swap" role="group" aria-label="Продукт"></div><span class="pt out"></span></div>
+    <div class="n" data-id="ref"><div class="n-h"><i></i>Референс<span class="mono">image</span></div><div class="im"><img id="r-ref" alt="Пример стиля"></div><span class="pt out"></span></div>
+    <div class="n" data-id="prompt"><div class="n-h"><i></i>Промпт<span class="mono">text</span></div><div class="n-b" id="r-prompt"></div><span class="pt out"></span></div>
+    <div class="n dec" data-id="preset"><div class="n-h"><i></i>Пресет<span class="mono">style</span></div><div class="n-b" id="r-preset"></div><span class="pt in"></span><span class="pt out"></span></div>
+    <div class="n dec" data-id="brand"><div class="n-h"><i></i>Бренд-директор<span class="mono">brand</span></div><div class="n-b">цвета, логотип, гравюра<b id="r-score">—</b></div><span class="pt in"></span><span class="pt out"></span></div>
+    <div class="n res" data-id="res"><div class="n-h"><i></i>Результат<span class="mono" id="r-name">4:5</span></div><div class="pic"><img id="r-img" alt=""></div><span class="pt in"></span></div>
+  </div>
+
+  <div class="t2" id="t2" aria-live="polite"><h2>Рецепт этой картинки</h2><p>Поменяйте продукт: пресет и&nbsp;правила бренда останутся прежними.</p></div>
+
+  <div class="plate" id="plate">
+    <div class="pf" id="pf">
+      <h1>У&nbsp;каждой картинки<br>есть рецепт</h1>
+      <p class="lead"><b>Соберите рецепт один раз и&nbsp;получайте материалы в&nbsp;одном стиле.</b><br> Нода&nbsp;— один шаг: что снимаем, в&nbsp;каком стиле, по&nbsp;правилам бренда.</p>
+      <button class="btn" type="button" data-go>Разобрать картинку</button>
+      <span class="mono">или наведите на&nbsp;любую картинку</span>
+    </div>
+    <div class="pb" id="pb"><b>У&nbsp;каждой картинки есть рецепт</b><span class="mono" id="pb-hint"></span><button class="btn" type="button" data-go id="pb-btn">Разобрать картинку</button></div>
+  </div>
+</section>
+
+<!-- 1б. Соедините сами -->
+<section class="sec" id="link">
+  <div class="wrap halves">
+    <div class="halves-txt" data-reveal>
+      <span class="num" aria-hidden="true">01</span>
+      <h2>Соедините ноды сами</h2>
+      <p class="lead">Протяните провод от&nbsp;кружка<br> одной ноды к&nbsp;кружку другой.</p>
+      <ol class="steps" id="link-steps">
+        <li data-e="prod>preset"><span class="mono">01</span>Продукт → Пресет</li>
+        <li data-e="preset>brand"><span class="mono">02</span>Пресет → Бренд-директор</li>
+        <li data-e="brand>res"><span class="mono">03</span>Бренд-директор → Результат</li>
+      </ol>
+      <p class="link-msg mono" id="link-msg" aria-live="polite">начните с&nbsp;продукта</p>
+      <button class="link mono" type="button" id="link-reset">начать заново</button>
+    </div>
+    <div class="win">
+    <div class="win-bar" aria-hidden="true"><span class="win-dots"><i></i><i></i><i></i></span><span class="win-tab is">Новый рецепт · 3 соединения</span></div>
+    <div class="canvas link-canvas" id="g-link" style="--h:520px;--mh:860px" data-edges="prod>preset,preset>brand,brand>res">
+      <svg class="wires" aria-hidden="true"></svg>
+      <div class="node" data-id="prod" data-pos="0,.08" data-mpos="0,0">
+        <div class="node-h"><i class="st"></i><b>Продукт</b><span class="mono">image</span></div>
+        <div class="node-b row"><img src="img/sevea/raw.webp" alt="" class="thumb"><span class="mono">фото_крема.jpg</span></div>
+        <span class="port out"></span>
+      </div>
+      <div class="node" data-id="preset" data-pos=".34,.06" data-mpos="r,.2">
+        <div class="node-h"><i class="st"></i><b>Пресет</b><span class="mono">style</span></div>
+        <div class="node-b"><p class="mono">Северное сияние · 4:5 · 4K</p></div>
+        <span class="port in"></span><span class="port out"></span>
+      </div>
+      <div class="node" data-id="brand" data-pos=".34,.62" data-mpos="0,.36">
+        <div class="node-h"><i class="st"></i><b>Бренд-директор</b><span class="mono">brand</span></div>
+        <div class="node-b"><p class="mono">цвета, композиция, стиль</p></div>
+        <span class="port in"></span><span class="port out"></span>
+      </div>
+      <div class="node res" data-id="res" data-pos="r,c" data-mpos="c,.54">
+        <div class="node-h"><i class="st"></i><b>Результат</b><span class="mono" id="link-st">пусто</span></div>
+        <div class="shot"><img src="img/sevea/studio.webp" alt="Собранная картинка" id="link-img"><div class="state show" id="link-state"><b>Пока пусто</b><span class="mono">соедините ноды проводами</span></div></div>
+        <span class="port in"></span>
+      </div>
+    </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Что делает каждая нода -->
+<section class="sec" id="what">
+  <div class="wrap">
+    <div class="blk-h" data-reveal>
+      <div class="blk-h-l"><span class="num" aria-hidden="true">02</span><h2>Каждая нода отвечает за&nbsp;своё</h2></div>
+      <p class="lead">Выключите любую ноду и&nbsp;посмотрите, что пропадёт из&nbsp;готовой картинки.<br class="br-d"> Нажмите на&nbsp;ноду, чтобы прочитать, за&nbsp;что она отвечает и&nbsp;что будет без&nbsp;неё.</p>
+    </div>
+    <div class="win">
+      <div class="win-bar" aria-hidden="true"><span class="win-dots"><i></i><i></i><i></i></span><span class="win-tab is">Рецепт · крем-маска</span><span class="mono win-hint">ноды можно перетаскивать</span></div>
+      <div class="canvas" id="g-what" style="--h:480px;--mh:1340px" data-edges="prod>preset,prompt>preset,preset>brand,brand>check,prod>check*,check>res">
+        <svg class="wires" aria-hidden="true"></svg>
+        <div class="node sel" data-id="prod" data-pos="0,0" data-mpos="0,0">
+          <div class="node-h"><i class="st"></i><b>Продукт</b><button class="sw" type="button" role="switch" aria-checked="true" aria-label="Нода «Продукт»"></button></div>
+          <div class="node-b row"><img src="img/sevea/raw.webp" alt="" class="thumb"><span class="mono">фото_крема.jpg</span></div>
+          <span class="port out"></span>
+        </div>
+        <div class="node" data-id="prompt" data-pos="0,b" data-mpos="r,0">
+          <div class="node-h"><i class="st"></i><b>Промпт</b><button class="sw" type="button" role="switch" aria-checked="true" aria-label="Нода «Промпт»"></button></div>
+          <div class="node-b"><p class="mono">Банка на&nbsp;камне, за&nbsp;ней северное сияние и&nbsp;горы гравюрой</p></div>
+          <span class="port out"></span>
+        </div>
+        <div class="node" data-id="preset" data-pos=".2,0" data-mpos="c,.17">
+          <div class="node-h"><i class="st"></i><b>Пресет</b><button class="sw" type="button" role="switch" aria-checked="true" aria-label="Нода «Пресет»"></button></div>
+          <div class="node-b"><p class="mono">Северное сияние · 4:5 · 4K</p></div>
+          <span class="port in"></span><span class="port out"></span>
+        </div>
+        <div class="node" data-id="brand" data-pos=".4,0" data-mpos="c,.27">
+          <div class="node-h"><i class="st"></i><b>Бренд-директор</b><button class="sw" type="button" role="switch" aria-checked="true" aria-label="Нода «Бренд-директор»"></button></div>
+          <div class="node-b"><p class="mono">цвета, композиция, стиль</p></div>
+          <span class="port in"></span><span class="port out"></span>
+        </div>
+        <div class="node idea" data-id="check" data-pos=".61,b" data-mpos="c,.37">
+          <div class="node-h"><i class="st"></i><b>Сверка товара</b><button class="sw" type="button" role="switch" aria-checked="true" aria-label="Нода «Сверка товара»"></button></div>
+          <div class="node-b"><p class="mono">форма, крышка, этикетка как на&nbsp;фото</p><span class="idea-tag mono">новая нода</span></div>
+          <span class="port in"></span><span class="port out"></span>
+        </div>
+        <div class="node res" data-id="res" data-pos="r,c" data-mpos="c,.48">
+          <div class="node-h"><i class="st"></i><b>Результат</b><span class="mono" id="what-score">бренд 99&nbsp;%</span></div>
+          <div class="shot"><img src="img/sevea/studio.webp" alt="Результат сборки" id="what-img"><div class="state" id="what-state"></div></div>
+          <span class="port in"></span>
+        </div>
+
+      <aside class="panel" id="what-panel" aria-live="polite">
+        <p class="mono panel-k">выбрана нода</p>
+        <h3 id="p-title">Продукт</h3>
+        <p id="p-does">Фото вашего товара. С&nbsp;него всё начинается.</p>
+        <p class="mono panel-k">если выключить</p>
+        <p id="p-without">Собирать не&nbsp;из&nbsp;чего: результат пустой.</p>
+        <button class="link mono" type="button" id="what-all" hidden>включить все ноды</button>
+      </aside>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Поменяйте одну ноду — вертикальный блок (две половины), ритм 01 В · 02 Г · 03 В · 04 Г -->
+<section class="sec" id="swap">
+  <div class="wrap halves">
+    <div class="halves-txt" data-reveal>
+      <span class="num" aria-hidden="true">03</span>
+      <h2>Поменяйте одну ноду</h2>
+      <p class="lead">Выберите в&nbsp;ноде другой пресет.<br> Банка та&nbsp;же, а&nbsp;настроение новое.</p>
+    </div>
+    <div class="win">
+    <div class="win-bar" aria-hidden="true"><span class="win-dots"><i></i><i></i><i></i></span><span class="win-tab is">Рецепт · крем-маска</span><span class="mono win-hint">ноды можно перетаскивать</span></div>
+    <div class="canvas" id="g-swap" style="--h:440px;--mh:900px" data-edges="prod>preset,prompt>preset,preset>res">
+      <svg class="wires" aria-hidden="true"></svg>
+      <div class="node" data-id="prod" data-pos="0,0" data-mpos="0,0">
+        <div class="node-h"><i class="st"></i><b>Продукт</b><span class="mono">image</span></div>
+        <div class="node-b row"><img src="img/sevea/raw.webp" alt="" class="thumb"><span class="mono">фото_крема.jpg</span></div>
+        <span class="port out"></span>
+      </div>
+      <div class="node" data-id="prompt" data-pos="0,b" data-mpos="r,0">
+        <div class="node-h"><i class="st"></i><b>Промпт</b><span class="mono">text</span></div>
+        <div class="node-b"><p class="mono">Банка на&nbsp;камне в&nbsp;центре кадра</p></div>
+        <span class="port out"></span>
+      </div>
+      <div class="node wide" data-id="preset" data-pos=".3,c" data-mpos="c,.3">
+        <div class="node-h"><i class="st"></i><b>Пресет</b><span class="mono">style</span></div>
+        <div class="node-b presets" role="radiogroup" aria-label="Пресет">
+          <button type="button" role="radio" aria-checked="true" data-img="studio" data-name="aurora">Северное сияние</button>
+          <button type="button" role="radio" aria-checked="false" data-img="cloudberry" data-name="cloudberry">Морошка</button>
+          <button type="button" role="radio" aria-checked="false" data-img="texture" data-name="texture">Текстура</button>
+        </div>
+        <span class="port in"></span><span class="port out"></span>
+      </div>
+      <div class="node res" data-id="res" data-pos="r,c" data-mpos="c,.62">
+        <div class="node-h"><i class="st"></i><b>Результат</b><span class="mono" id="swap-cap">Северное сияние · 4:5</span></div>
+        <div class="shot"><img src="img/sevea/studio.webp" alt="Результат с выбранным пресетом" id="swap-img"></div>
+        <span class="port in"></span>
+      </div>
+    </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. Кульминация: запустить рецепт -->
+<section class="sec run" id="run">
+  <div class="wrap">
+    <div class="run-h blk-h" data-reveal>
+      <div class="blk-h-l"><span class="num" aria-hidden="true">04</span><h2>Запустите рецепт</h2></div>
+      <div class="run-h-r">
+        <p class="lead">Выберите продукт или&nbsp;загрузите своё фото.<br class="br-d"> Рецепт соберёт сторис, карточку и&nbsp;баннер.</p>
+      </div>
+    </div>
+    <div class="win">
+    <div class="win-bar"><span class="win-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="win-tab is" aria-hidden="true">Рецепт · 5 нод</span><span class="mono demo-tag"><b>демонстрация</b> картинки подготовлены заранее</span></div>
+    <div class="canvas" id="g-run" style="--h:300px;--mh:1120px" data-edges="prod>recipe,recipe>out">
+      <svg class="wires" aria-hidden="true"></svg>
+      <div class="node in-node" data-id="prod" data-pos="0,c" data-mpos="c,0">
+        <div class="node-h"><i class="st"></i><b>Продукт</b><span class="mono" id="run-name">крем-маска</span></div>
+        <div class="node-b products" role="radiogroup" aria-label="Продукт" id="run-prods">
+          <button type="button" role="radio" aria-checked="true" data-img="img/sevea/studio.webp" data-name="крем-маска" data-full="Ночной питательный крем-маска" data-fmt="mask" data-tone="dark"><img src="img/sevea/studio.webp" alt="Ночной питательный крем-маска"></button>
+          <button type="button" role="radio" aria-checked="false" data-img="img/sevea/s21.webp" data-name="крем для рук" data-full="Крем для рук" data-fmt="hand" data-tone="light"><img src="img/sevea/s21.webp" alt="Крем для рук"></button>
+          <button type="button" role="radio" aria-checked="false" data-img="img/sevea/s24.webp" data-name="сыворотка" data-full="Обновляющая сыворотка" data-fmt="renew" data-tone="dark"><img src="img/sevea/s24.webp" alt="Обновляющая сыворотка"></button>
+          <label class="up" title="Своё фото"><input type="file" accept="image/*" id="run-file" class="sr" aria-label="Загрузить своё фото"><span aria-hidden="true">+</span></label>
+        </div>
+        <p class="mono in-hint">или перетащите фото сюда</p><div class="run-btns"><button class="btn" type="button" id="run-go">Запустить рецепт</button><a class="btn" id="run-cta" href="https://snapbuild.ru/" target="_blank" rel="noopener" hidden>Открыть Снэпбилд</a></div>
+        <span class="port out"></span>
+      </div>
+      <div class="node recipe-node" data-id="recipe" data-pos=".245,c" data-mpos="c,.2">
+        <div class="node-h"><i class="st"></i><b>Рецепт</b><span class="mono" id="run-st" aria-live="polite">ждёт запуска</span></div>
+        <ol class="node-b q" id="run-q">
+          <li><span>промпт</span><i>в очереди</i></li>
+          <li><span>пресет</span><i>в очереди</i></li>
+          <li><span>бренд-директор</span><i>в очереди</i></li>
+          <li><span>сверка товара</span><i>в очереди</i></li>
+          <li><span>форматы ×3</span><i>в очереди</i></li>
+        </ol>
+        <span class="port in"></span><span class="port out"></span>
+      </div>
+      <div class="node out-node" data-id="out" data-pos="r,c" data-mpos="c,.48">
+        <div class="node-h"><i class="st"></i><b>Материалы</b><span class="mono" id="run-count">0 из&nbsp;3</span></div>
+        <div class="fmts" id="fmts">
+          <figure class="fm fm-story"><div class="fi"><img alt=""><span class="tag mono">новинка</span><div class="fm-t"><b class="fm-name">Ночной питательный крем-маска</b><span class="fm-sub">линия «Сияние»</span></div></div><figcaption class="mono">сторис 9:16</figcaption></figure>
+          <figure class="fm fm-card"><div class="fi"><img alt=""><div class="fm-t"><b class="fm-name">Ночной питательный крем-маска</b><span class="fm-sub">линия «Сияние»</span></div></div><figcaption class="mono">карточка 3:4</figcaption></figure>
+          <figure class="fm fm-banner"><div class="fi"><div class="fm-t"><span class="fm-sub">линия «Сияние»</span><b class="fm-name">Ночной питательный крем-маска</b><span class="fm-btn">Купить</span></div><img alt=""></div><figcaption class="mono">баннер 16:9</figcaption></figure>
+        </div>
+        <span class="port in"></span>
+      </div>
+    </div>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <p>Концепт страницы нодовой системы для&nbsp;Снэпбилда. Тестовое, Алина Кругликова, 2026.</p>
+    <p class="mono">картинки: мой концепт бренда «Севея», фото сделаны нейросетью</p>
+  </div>
+</footer>
+
+<script src="hero.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

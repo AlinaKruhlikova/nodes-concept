@@ -1,0 +1,741 @@
+/* Снэпбилд · ноды — концепт.
+   Шкала отступов: 8 / 16 / 24 / 40 / 64 / 104 / 168.
+   Сетка: 12 колонок, промежуток 24, поля 40 (телефон — 16), контейнер до 1360. */
+
+:root{
+  --s1:8px; --s2:16px; --s3:24px; --s4:40px; --s5:64px; --s6:104px; --s7:168px;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --r-node:14px; --r-in:8px;
+  --f-text:"Onest",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+:root,[data-theme="light"]{
+  --bg:#ECEEF1; --grid:#DFE3E8; --surface:#FFFFFF; --ink:#15171C; --mute:#5B606B;
+  --line:#15171C; --wire:#15171C; --accent:#8FD614; --on-accent:#15171C;
+  --soft:#F4F5F7; --danger:#D42F3A; --danger-bg:#FDECEC; --off:#9AA0AA;
+}
+[data-theme="dark"]{
+  --bg:#141416; --grid:#1E1E22; --surface:#1D1D21; --ink:#F2F1F4; --mute:#A3A1AC;
+  --line:#3A3A42; --wire:#C9C7D1; --accent:#B8F23A; --on-accent:#141416;
+  --soft:#26262B; --danger:#FF6B6B; --danger-bg:#3A1F22; --off:#5E5D66;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--ink);
+  font:400 16px/1.5 var(--f-text); -webkit-font-smoothing:antialiased;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px; background-position:-1px -1px;
+}
+img{display:block;max-width:100%}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit}
+p,h1,h2,h3{text-wrap:pretty}
+.mono{font:400 12px/1.35 var(--f-mono);letter-spacing:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+
+.wrap{max-width:1360px;margin:0 auto;padding:0 var(--s4)}
+
+/* Шапка */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid transparent;transition:border-color .3s}
+.top.scrolled{border-bottom-color:var(--grid)}
+.top-in{height:72px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:700;font-size:20px;text-decoration:none;letter-spacing:-.01em}
+.logo .mono{color:var(--mute);font-size:12px;margin-left:4px}
+.top-nav{display:flex;align-items:center;gap:var(--s2)}
+.theme{position:relative;display:flex;border:1.5px solid var(--line);border-radius:999px;padding:3px;font-size:14px}
+.theme span{padding:6px 14px;border-radius:999px;transition:background .3s,color .3s}
+[data-theme="light"] .theme-l,[data-theme="dark"] .theme-d{background:var(--ink);color:var(--bg)}
+
+/* Кнопки */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s1);background:var(--accent);color:var(--on-accent);
+  font-weight:600;font-size:16px;line-height:1;padding:16px 24px;border-radius:999px;text-decoration:none;
+  transition:transform .25s var(--ease),box-shadow .25s var(--ease)}
+.btn:hover{box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 35%,transparent)}
+.btn:active{transform:scale(.97)}
+.btn-sm{font-size:14px;padding:12px 20px}
+.btn[aria-disabled="true"]{background:var(--soft);color:var(--mute);pointer-events:none}
+
+/* Секции */
+.sec{padding:var(--s6) 0}
+.hero{padding-top:var(--s5)}
+/* Типографика: три кегля на экран — заголовок (h1 или h2), текст 24 / 18, подписи нод 12 моно.
+   У каждого блока своя композиция, но одна левая линия — край контейнера. */
+h1{font-weight:600;font-size:clamp(52px,8.6vw,132px);line-height:.94;letter-spacing:-.045em;margin-left:-.05em}
+h2{font-weight:600;font-size:clamp(34px,4.2vw,60px);line-height:1.02;letter-spacing:-.035em}
+h3{font-weight:600;font-size:24px;line-height:1.2;letter-spacing:-.015em}
+.lead{font-size:18px;line-height:1.5;color:var(--mute)}
+
+/* 1. Первый экран — «Орбита»: текст по центру, вокруг кружат ноды-картинки (выбор Алины 2.11) */
+.hero{padding:0}
+.orbit-wrap{position:relative;height:max(760px,min(100svh - 72px,920px));overflow:hidden}
+#ring{position:absolute;inset:0}
+.hero-text{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(1000px,100% - 32px);z-index:2;
+  display:flex;flex-direction:column;align-items:center;text-align:center}
+.hero-text h1{margin:0;font-size:clamp(44px,6vw,88px);margin-left:0}
+.duo-p{margin-top:var(--s3);font-size:24px;line-height:1.4;letter-spacing:-.01em;color:var(--mute)}
+.duo-p b{font-weight:500;color:var(--ink)}
+.hero-text .btn{margin-top:var(--s4)}
+@media (max-width:767px){.br-d{display:none}}
+/* нода-картинка на орбите: картинка и есть нода, подпись снаружи */
+.on{position:absolute;left:0;top:0;width:128px;will-change:transform,opacity;transition:filter .3s}
+.on .lab{display:flex;gap:8px;margin-bottom:6px;font:400 11px/1.3 "JetBrains Mono",monospace;color:var(--mute);white-space:nowrap}
+.on .lab b{font-weight:500;color:var(--ink)}
+.on .ph{aspect-ratio:3/4;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px rgba(21,23,28,.08)}
+.on .ph img{width:100%;height:100%;object-fit:cover}
+.on:hover .ph{box-shadow:0 0 0 2px var(--accent),0 0 0 3.5px var(--ink)}
+#g-hero.folded{height:0;opacity:0;pointer-events:none}
+#g-hero{transition:height .8s var(--ease),opacity .6s .2s}
+@media (max-width:767px){.on{width:76px}.orbit-wrap{height:720px}}
+.sec-h{margin-bottom:var(--s5)}
+/* 2. Одна фраза в два тона */
+.h-duo h2{max-width:22em}
+.h-duo h2 span{color:var(--off)}
+/* 3. Заявление по центру */
+.h-center{text-align:center}
+.h-center .lead{margin-top:var(--s3)}
+/* 4. Заголовок, разведённый по краям, между частями — провод */
+.h-split{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s3)}
+.h-split h2{white-space:nowrap}
+.h-ghost{color:var(--off)}
+.split-wire{flex:1;position:relative;height:1.5px;background:var(--wire);margin-top:.12em}
+.split-wire::before,.split-wire::after{content:"";position:absolute;top:-5px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:1.5px solid var(--ink)}
+.split-wire::before{left:0}.split-wire::after{right:0}
+.split-wire i{position:absolute;top:-5px;left:0;width:12px;height:12px;border-radius:50%;background:var(--accent);border:1.5px solid var(--ink);animation:ride 2.6s cubic-bezier(.65,0,.35,1) infinite}
+@keyframes ride{from{left:0}to{left:calc(100% - 12px)}}
+.lead-under{margin-bottom:var(--s5)}
+/* 5. Заголовок слева, текст под ним */
+.h-left .lead{margin-top:var(--s3)}
+.step{color:var(--ink)!important;font-weight:500}
+
+/* Появление */
+[data-reveal]{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+[data-reveal].in{opacity:1;transform:none}
+
+/* Холст нод */
+.canvas{position:relative;height:var(--h);user-select:none;transition:height .8s var(--ease)}
+.canvas.v{height:var(--mh)}
+.wires{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.wire{fill:none;stroke:var(--wire);stroke-width:1.5;transition:stroke .3s,opacity .4s}
+.wire.ref{stroke-dasharray:2 5;opacity:.7}
+.node.idea{border-style:dashed;border-color:var(--ink)}
+.idea-tag,.node-b .idea-tag{display:inline-block;margin-top:8px;background:var(--accent);color:var(--on-accent);border-radius:999px;padding:3px 10px}
+#g-hero .res{width:260px}
+#g-what .res{width:240px}
+.wire.off{stroke:var(--off);stroke-dasharray:4 6;opacity:.8}
+.wire.hide{opacity:0}
+.pulse{fill:var(--accent);stroke:var(--ink);stroke-width:1.5}
+
+.node{position:absolute;width:216px;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--r-node);
+  padding:12px 14px 14px;transition:left .8s var(--ease),top .8s var(--ease),opacity .5s var(--ease),transform .5s var(--ease),border-color .3s,box-shadow .3s}
+.node.dragging{transition:opacity .5s,transform .2s,box-shadow .2s;box-shadow:0 1px 2px rgba(0,0,0,.08),0 12px 28px -12px rgba(0,0,0,.25);transform:scale(1.02);z-index:5}
+.node-h{display:flex;align-items:center;gap:var(--s1);cursor:grab;min-height:24px}
+.canvas.v .node-h{cursor:default}
+.node.dragging .node-h{cursor:grabbing}
+.node-h b{font-weight:600;font-size:15px;line-height:1.2;flex:1}
+.node-h .mono{color:var(--mute)}
+.st{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 1.5px var(--ink);flex:none;transition:background .3s}
+.node-b{margin-top:var(--s1)}
+.node-b .mono,.node-b p.mono{color:var(--mute)}
+.node-b.row{display:flex;align-items:center;gap:12px}
+.thumb{width:44px;height:44px;border-radius:var(--r-in);object-fit:cover}
+.score{font-weight:600;font-size:15px;margin-top:4px}
+.node:hover{border-color:var(--ink)}
+[data-theme="dark"] .node:hover{border-color:var(--mute)}
+
+.port{position:absolute;top:50%;width:12px;height:12px;margin-top:-6px;border-radius:50%;background:var(--surface);border:1.5px solid var(--ink);transition:background .3s,transform .3s var(--ease)}
+.port.in{left:-7px}.port.out{right:-7px}
+.node:hover .port{transform:scale(1.25)}
+.canvas.live .port{background:var(--accent)}
+.canvas.v .port{top:auto;left:50%;margin:0 0 0 -6px}
+.canvas.v .port.in{top:-7px}.canvas.v .port.out{bottom:-7px;right:auto}
+
+.res{width:280px}
+.shot{display:block;width:100%;margin-top:var(--s1);position:relative;border-radius:var(--r-in);overflow:hidden;aspect-ratio:3/4;background:var(--soft)}
+.shot img{width:100%;height:100%;object-fit:cover;transition:filter .5s,transform .8s var(--ease)}
+button.shot{cursor:zoom-out}
+.canvas.folded button.shot{cursor:pointer}
+.canvas-hint{position:absolute;right:0;top:-28px;color:var(--mute);opacity:0;transition:opacity .5s .9s}
+
+/* Первый экран: свёрнутое состояние */
+.canvas.folded .node:not(.res){opacity:0;transform:translateX(-16px) scale(.96);pointer-events:none}
+.canvas.folded .wire{opacity:0}
+.canvas.folded .res .port{opacity:0}
+.canvas:not(.folded) .canvas-hint{opacity:1}
+#g-hero .node:nth-of-type(2){transition-delay:0s,0s,.05s,.05s}
+#g-hero .node:nth-of-type(3){transition-delay:0s,0s,.12s,.12s}
+#g-hero .node:nth-of-type(4){transition-delay:0s,0s,.24s,.24s}
+#g-hero .node:nth-of-type(5){transition-delay:0s,0s,.36s,.36s}
+#g-hero.folded .node{transition-delay:0s!important}
+
+/* Генерация */
+.gen img{filter:blur(14px) saturate(.6);transform:scale(1.04)}
+.shot::after,.fi::after{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:var(--accent);box-shadow:0 0 12px var(--accent);opacity:0}
+.gen.shot::after,.gen .shot::after,.gen.fi::after{opacity:1;animation:scan .9s linear}
+@keyframes scan{from{top:0}to{top:100%}}
+
+/* 2. Что делает нода */
+.panel{position:absolute;left:20%;bottom:0;width:calc(19% + 216px);background:var(--soft);border-radius:var(--r-node);padding:var(--s3)}
+.panel h3{margin:var(--s1) 0 var(--s1)}
+.panel-k{color:var(--mute)}
+.panel p+.panel-k{margin-top:var(--s3)}
+.panel #p-without{margin-top:var(--s1)}
+.panel-tip{margin-top:var(--s3);color:var(--mute);padding-top:var(--s2);border-top:1px solid var(--grid)}
+.node.sel{box-shadow:0 0 0 3px var(--accent)}
+.node.off{border-style:dashed;border-color:var(--off)}
+.node.off .node-b,.node.off .node-h b{opacity:.45}
+.node.off .st{background:var(--off)}
+.sw{width:34px;height:20px;border-radius:999px;background:var(--ink);position:relative;flex:none;transition:background .3s}
+.sw::after{content:"";position:absolute;top:3px;left:17px;width:14px;height:14px;border-radius:50%;background:var(--accent);transition:left .3s var(--ease),background .3s}
+.sw[aria-checked="false"]{background:var(--off)}
+.sw[aria-checked="false"]::after{left:3px;background:var(--surface)}
+.state{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:var(--s1);padding:var(--s3);text-align:left;opacity:0;transition:opacity .4s;background:var(--soft)}
+.state.show{opacity:1}
+.state.err{background:var(--danger-bg);color:var(--danger)}
+.state b{font-weight:600;font-size:15px;line-height:1.3}
+.res.err{border-color:var(--danger)}
+.res.err .st{background:var(--danger)}
+.res.warn .st{background:#F5A524}
+#what-score{transition:color .3s}
+.res.warn #what-score{color:var(--danger)}
+
+/* 3. Пресеты */
+.node.wide{width:240px}
+.presets{display:grid;gap:6px;margin-top:12px}
+.presets button{display:flex;justify-content:space-between;align-items:center;text-align:left;padding:10px 12px;border-radius:var(--r-in);font-size:14px;background:var(--soft);transition:background .25s,color .25s}
+.presets button::after{content:"";width:8px;height:8px;border-radius:50%;border:1.5px solid var(--mute)}
+.presets button:hover{background:var(--grid)}
+.presets button[aria-checked="true"]{background:var(--ink);color:var(--bg)}
+.presets button[aria-checked="true"]::after{background:var(--accent);border-color:var(--accent)}
+
+/* 4. Материалы */
+.in-node{width:236px}
+.products{display:flex;gap:var(--s1);margin-top:12px}
+.products button{width:64px;aspect-ratio:3/4;border-radius:var(--r-in);overflow:hidden;opacity:.55;outline:1.5px solid transparent;outline-offset:2px;transition:opacity .25s,outline-color .25s}
+.products button img{width:100%;height:100%;object-fit:cover}
+.products button:hover{opacity:.85}
+.products button[aria-checked="true"]{opacity:1;outline-color:var(--ink)}
+.recipe{list-style:none;display:grid;gap:6px;margin-top:12px;counter-reset:r}
+.recipe li{counter-increment:r;color:var(--mute);display:flex;gap:var(--s1)}
+.recipe li::before{content:counter(r);color:var(--ink)}
+.out-node{width:min(620px,52%)}
+.formats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px;align-items:start}
+.f figcaption{color:var(--mute);margin-top:6px}
+.fi{position:relative;border-radius:6px;overflow:hidden;background:var(--soft)}
+.fi img{width:100%;height:100%;object-fit:cover;transition:filter .5s,transform .8s var(--ease)}
+.f-story .fi{aspect-ratio:9/16}
+.f-card .fi{aspect-ratio:3/4}
+.f-post .fi{aspect-ratio:1/1}
+.f-cover .fi{aspect-ratio:4/5}
+.f-banner{grid-column:span 2}.f-banner .fi{aspect-ratio:16/9;display:grid;grid-template-columns:1fr 1fr;background:#F6D3DE}
+.f-banner .fi img{grid-column:2}
+.f-name{align-self:center;padding:0 12px;font-weight:600;font-size:15px;line-height:1.15;color:#15171C}
+.f-wide{grid-column:span 2}.f-wide .fi{aspect-ratio:3/1;display:flex;align-items:center;justify-content:space-between;background:#DCEBF6}
+.f-wide .fi img{width:34%;height:100%}
+.f-wide .f-name{font-size:14px}
+.tag{position:absolute;left:6px;top:6px;background:var(--accent);color:var(--on-accent);border-radius:999px;padding:2px 8px;font-size:10px}
+.f-story .fi img{transform:scale(1.15)}
+.f-story.gen .fi img,.f.gen .fi img{filter:blur(12px)}
+
+/* 5. Финал */
+.drop-node{width:300px}
+.drop{position:relative;display:flex;align-items:center;justify-content:center;margin-top:12px;height:180px;border:1.5px dashed var(--mute);border-radius:var(--r-in);text-align:center;cursor:pointer;overflow:hidden;transition:border-color .3s,background .3s}
+.drop:hover,.drop.over{border-color:var(--ink);background:var(--soft)}
+.drop.over{border-style:solid;transform:scale(1.01)}
+.drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;animation:land .6s var(--ease)}
+@keyframes land{from{transform:scale(1.15);opacity:0}to{transform:none;opacity:1}}
+.drop-t{font-size:15px;line-height:1.4}
+.drop-t .mono{color:var(--mute)}
+.link{margin-top:12px;color:var(--mute);text-decoration:underline;text-underline-offset:3px}
+.link:hover{color:var(--ink)}
+.res-final{width:280px}
+.res-final .node-b{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s2)}
+.res-final p{font-size:15px;line-height:1.4}
+
+.foot{padding:var(--s5) 0;border-top:1px solid var(--grid)}
+.foot-in{display:flex;justify-content:space-between;gap:var(--s3);color:var(--mute);font-size:14px}
+
+/* Смена темы */
+::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+
+/* Планшет */
+@media (max-width:1199px){
+  .out-node{width:52%}
+  .formats{grid-template-columns:repeat(3,1fr)}
+}
+/* Телефон */
+@media (max-width:767px){
+  .wrap{padding:0 var(--s2)}
+  .sec{padding:var(--s5) 0}
+  .hero{padding-top:var(--s4)}
+  .hero-text{margin-bottom:var(--s4)}
+  .sec-h{margin-bottom:var(--s4)}
+  .lead{font-size:16px}
+  .duo-p{font-size:18px}
+  .h-split{flex-direction:column;align-items:flex-start;gap:var(--s1)}
+  .split-wire{display:none}
+  .h-split h2{white-space:normal}
+  .theme span{padding:6px 10px}
+  .logo .mono,.top-nav .btn-sm{display:none}
+  .node{width:46%}
+  .canvas.v .node[data-id="preset"],.canvas.v .node[data-id="brand"],.canvas.v .node[data-id="check"],.canvas.v .node[data-id="recipe"]{width:64%}
+  .node.res,.node.wide,.in-node,.drop-node,.res-final{width:72%}
+  .canvas.v.folded{height:440px}
+  .canvas.v .panel{left:0;width:100%}
+  .out-node{width:100%}
+  .formats{grid-template-columns:repeat(2,1fr)}
+  .node-h b{font-size:14px}
+  .canvas-hint{display:none}
+  .foot-in{flex-direction:column}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none!important;animation:none!important}
+  html{scroll-behavior:auto}
+  [data-reveal]{opacity:1;transform:none}
+}
+
+/* ===== Единый стиль нод (как на орбите, 2.11) =====
+   картинка = нода, подпись снаружи; ноды-решения — карточка с лаймовой шапкой; провода тонкие и светлые */
+:root,[data-theme="light"]{--wire:#A3A9B3}
+[data-theme="dark"]{--wire:#5C5B66}
+.node{border:0;padding:0;border-radius:12px;background:var(--surface);box-shadow:0 0 0 1px color-mix(in srgb,var(--ink) 12%,transparent)}
+.node:hover{box-shadow:0 0 0 1.5px var(--ink)}
+.node-h{padding:9px 12px;border-radius:12px 12px 0 0;border-bottom:1px solid var(--grid);min-height:0}
+.node-h b{font-size:14px}
+.node-b{margin:0;padding:10px 12px 12px}
+.st{box-shadow:none;width:7px;height:7px}
+.n-dec .node-h{background:var(--accent);color:var(--on-accent);border-bottom:0}
+.n-dec .node-h .mono{color:var(--on-accent);opacity:.7}
+.n-dec .st{background:var(--on-accent)}
+.n-dec .sw{background:var(--on-accent)}
+/* нода-картинка: без карточки, подпись сверху снаружи */
+.node.n-img{background:none;box-shadow:none;width:150px}
+.node.n-img.res{width:240px}
+#g-hero .node.n-img.res{width:260px}
+.n-img .node-h{background:none;border:0;padding:0 0 6px;border-radius:0}
+.n-img .node-h b{font:500 11px/1.3 "JetBrains Mono",monospace}
+.n-img .node-h .mono{font-size:11px}
+.n-img .st{display:none}
+.n-img .node-b{padding:0}
+.n-img .node-b.row{display:block}
+.n-img .node-b.row .mono{display:none}
+.n-img .thumb{width:100%;height:auto;aspect-ratio:4/5;border-radius:14px;box-shadow:0 0 0 1px color-mix(in srgb,var(--ink) 8%,transparent)}
+.n-img .shot{margin:0;border-radius:14px}
+.n-img:hover .thumb,.n-img:hover .shot{box-shadow:0 0 0 2px var(--accent),0 0 0 3.5px var(--ink)}
+.n-img.sel{box-shadow:none}.n-img.sel .thumb,.n-img.sel .shot{box-shadow:0 0 0 3px var(--accent)}
+.n-img .port{top:calc(50% + 10px)}
+.node.idea{box-shadow:none;outline:1.5px dashed var(--ink);outline-offset:0}
+.node.off{box-shadow:none;outline:1.5px dashed var(--off)}
+.node.n-dec.off .node-h{background:var(--soft);color:var(--mute)}
+.port{width:10px;height:10px;margin-top:-5px;border:1.5px solid var(--wire);background:var(--bg)}
+.port.in{left:-6px}.port.out{right:-6px}
+.canvas.live .port{background:var(--accent);border-color:var(--ink)}
+.res.err .shot{box-shadow:0 0 0 2px var(--danger)}
+
+/* ===== Первый экран: орбита превращается в полотно ===== */
+.hero-box{position:absolute;left:50%;bottom:32px;width:min(1280px,100% - 80px);transform:translateX(-50%);z-index:3;pointer-events:none}
+.hero-box .canvas{pointer-events:auto}
+#g-hero{transition:opacity .4s}
+#g-hero.folded{opacity:0;pointer-events:none;height:var(--h)}
+#g-hero.v.folded{height:var(--mh)}
+.orbit-wrap .hero-text{transition:top .8s var(--ease),transform .8s var(--ease)}
+.orbit-wrap.open{height:max(860px,min(100svh - 72px,920px))}
+.orbit-wrap.open .hero-text{top:48px;transform:translate(-50%,0)}
+.orbit-wrap .hero-text h1{transition:font-size .8s var(--ease)}
+.orbit-wrap.open .hero-text h1{font-size:clamp(36px,4vw,56px)}
+.orbit-wrap .duo-p{transition:opacity .3s,max-height .6s var(--ease),margin .6s;max-height:6em}
+.orbit-wrap.open .duo-p{opacity:0;max-height:0;margin:0}
+.orbit-wrap.open .hero-text .btn{margin-top:var(--s2)}
+#g-hero.flip .node{transition:opacity .5s,transform .9s var(--ease)!important}
+@media (max-width:767px){
+  .hero-box{width:calc(100% - 32px);bottom:24px}
+  .orbit-wrap.open{height:calc(var(--open-h,1240px))}
+}
+
+/* ===== Две половины: текст ↔ полотно равного веса ===== */
+.halves{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--s3);align-items:center}
+.halves-txt{grid-column:1 / span 4}
+.halves .canvas{grid-column:6 / span 7}
+.halves-txt .lead{margin-top:var(--s3)}
+.steps{list-style:none;margin-top:var(--s4);display:grid;gap:var(--s1)}
+.steps li{display:flex;gap:12px;align-items:baseline;font-size:16px;color:var(--mute);padding:10px 0;border-top:1px solid var(--grid);transition:color .3s}
+.steps li .mono{color:var(--mute)}
+.steps li.done{color:var(--ink)}
+.steps li.done .mono{color:var(--ink)}
+.steps li.done::after{content:"✓";margin-left:auto;color:var(--ink);font-weight:600}
+.steps li.next{color:var(--ink)}
+.link-msg{margin-top:var(--s3);color:var(--mute);min-height:1.4em}
+.link-msg.bad{color:var(--danger)}
+.link-msg.good{color:var(--ink)}
+.drag-wire{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-dasharray:4 4}
+.link-canvas .port{cursor:crosshair}
+.link-canvas .port::before{content:"";position:absolute;inset:-12px;border-radius:50%}
+.link-canvas .port.armed{background:var(--accent);border-color:var(--ink);transform:scale(1.4)}
+.link-canvas .port.target{transform:scale(1.5);background:var(--accent);border-color:var(--ink)}
+.link-canvas .wire.hide{opacity:0}
+@media (max-width:1199px){.halves-txt{grid-column:1 / span 5}.halves .canvas{grid-column:6 / span 7}}
+@media (max-width:767px){.halves{display:flex;flex-direction:column;align-items:stretch}.halves .canvas{width:100%}}
+
+/* ===== 4. Кульминация «Запустите рецепт» (3.11) ===== */
+.run-h{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--s3);align-items:end;margin-bottom:var(--s5)}
+.run-h h2{grid-column:1 / span 6}
+.run-h-r{grid-column:7 / span 6;display:flex;flex-direction:column;align-items:flex-start;gap:var(--s3)}
+#g-run .in-node{width:232px}
+.in-hint{padding:0 12px 12px;color:var(--mute)}
+.in-node.over{box-shadow:0 0 0 2px var(--accent),0 0 0 3.5px var(--ink)}
+.products .up,.products .own{width:44px;aspect-ratio:3/4;border-radius:var(--r-in)}
+#g-run .products{flex-wrap:wrap}
+#g-run .products button{width:44px}
+.products .up{display:flex;align-items:center;justify-content:center;border:1.5px dashed var(--mute);color:var(--mute);font-size:20px;cursor:pointer;transition:border-color .25s,color .25s}
+.products .up:hover{border-color:var(--ink);color:var(--ink)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.recipe-node{width:272px}
+.q{list-style:none;display:grid;gap:2px;counter-reset:q}
+.q li{counter-increment:q;display:flex;align-items:center;gap:var(--s1);padding:6px 0;font:400 12px/1.35 var(--f-mono);color:var(--mute);transition:color .3s}
+.q li::before{content:counter(q);width:12px;color:var(--ink)}
+.q li span{flex:1}
+.q li i{font-style:normal;font-size:11px;padding:2px 8px;border-radius:999px;background:var(--soft);transition:background .3s,color .3s}
+.q li.work{color:var(--ink)}
+.q li.work i{background:var(--ink);color:var(--bg);animation:blink 1s ease-in-out infinite}
+.q li.done{color:var(--ink)}
+.q li.done i{background:var(--accent);color:var(--on-accent)}
+@keyframes blink{50%{opacity:.55}}
+/* состояния ноды: работает — лаймовое кольцо дышит, готово — точка лаймовая */
+.node.busy{box-shadow:0 0 0 2px var(--accent);animation:breathe 1.2s ease-in-out infinite}
+@keyframes breathe{50%{box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 45%,transparent)}}
+.node.done .st{background:var(--accent);box-shadow:0 0 0 1.5px var(--ink)}
+.n-dec.done .st{background:var(--on-accent)}
+#g-run .out-node{width:calc(50% - 12px)}
+/* три формата одной высоты: ширины пропорциональны сторонам 9:16, 3:4, 16:9 */
+.fmts{display:grid;grid-template-columns:9fr 12fr 28.4fr;gap:12px;padding:12px;align-items:start}
+.fm figcaption{color:var(--mute);margin-top:6px}
+.fm .fi{position:relative}
+.fm-story .fi{aspect-ratio:9/16}
+.fm-card .fi{aspect-ratio:3/4;background:#fff}
+.fm-banner .fi{aspect-ratio:16/9;display:grid;grid-template-columns:1fr 1fr;background:#F3EBDD;color:#1F2A36} /* бумага и чернила «Севеи» */
+.fm .fi img{position:absolute;inset:0}
+.fm-banner .fi img{position:relative;grid-column:2;grid-row:1}
+.fm-t{position:absolute;z-index:1;display:flex;flex-direction:column;gap:4px;color:#15171C}
+.fm-story .fi img{transform:scale(1.25)}
+.fm-story .fm-t{left:8px;right:8px;bottom:10px;align-items:flex-start}
+.fm-story .fm-name{font-size:14px;line-height:1.1;font-weight:600}
+.fm-story .tag{position:static}
+.fm-card .fi img{height:74%;object-fit:cover}
+.fm-card .fm-t{left:10px;right:10px;bottom:8px}
+.fm-card .fm-name{font-size:13px;font-weight:600;line-height:1.15}
+.fm-card .fm-t .mono{color:#5B606B;font-size:11px}
+.fm-banner .fm-t{position:relative;grid-column:1;grid-row:1;align-self:center;padding:0 0 0 14px;gap:10px}
+.fm-banner .fm-t b{font-size:17px;line-height:1.1;font-weight:600;letter-spacing:-.01em}
+.fm-btn{align-self:flex-start;background:#15171C;color:#fff;font-size:12px;font-weight:600;padding:7px 14px;border-radius:999px}
+/* пока рецепт не запущен — пустые рамки форматов */
+.fm.empty .fi{background:var(--soft)!important;outline:1.5px dashed var(--grid);outline-offset:-1.5px}
+.fm.empty .fi>*{opacity:0}
+.fm .fi>*{transition:opacity .5s var(--ease)}
+.run-foot{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--s3);align-items:center;margin-top:var(--s5)}
+.demo{grid-column:1 / span 6;font-size:15px;line-height:1.5;color:var(--mute);text-wrap:balance}
+.demo b{display:inline-block;margin-right:var(--s1);padding:2px 10px;border-radius:999px;background:var(--soft);color:var(--ink)}
+#run-cta{grid-column:7 / span 6;justify-self:start}
+#g-run.ran ~ * #run-cta,#run-cta[aria-disabled="false"]{animation:pop .6s var(--ease)}
+@keyframes pop{from{transform:scale(.92)}to{transform:none}}
+@media (max-width:1199px){#g-run .out-node{width:calc(50% - 12px)}}
+@media (max-width:767px){
+  .run-h,.run-foot{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s3)}
+  .run-h{margin-bottom:var(--s4)}
+  #g-run .in-node,.recipe-node{width:88%}
+  #g-run .out-node{width:100%}
+  .fmts{grid-template-columns:9fr 12fr}
+  .fm-banner{grid-column:1 / -1}
+}
+.products .up:focus-within{outline:2px solid var(--accent);outline-offset:3px}
+
+/* ===== Первый экран: орбита + созвездие (3.11) ===== */
+#cwires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:1}
+#cwires path{fill:none;stroke:var(--wire);stroke-width:1.2;transition:stroke .25s}
+#cwires circle{fill:var(--bg);stroke:var(--wire);stroke-width:1.2}
+#cwires .hot{stroke:var(--ink);stroke-width:1.5}
+#cwires circle.hot{fill:var(--accent)}
+#ring{z-index:1}
+.on-card .cd{background:var(--surface);border-radius:12px;overflow:hidden;box-shadow:0 0 0 1px color-mix(in srgb,var(--ink) 12%,transparent)}
+.on-card .cd-h{display:flex;align-items:center;gap:6px;background:var(--accent);color:var(--on-accent);font:600 13px/1 var(--f-text);padding:8px 10px}
+.on-card .cd-h i{width:6px;height:6px;border-radius:50%;background:var(--on-accent)}
+.on-card .cd p{padding:8px 10px 10px;font-size:13px;line-height:1.35}
+.on-card:hover .cd{box-shadow:0 0 0 2px var(--accent),0 0 0 3.5px var(--ink)}
+.on-card{width:150px}
+@media (max-width:767px){.on-card{width:124px}.on-card .cd p{font-size:11px;padding:6px 8px 8px}.on-card .cd p:only-of-type{text-wrap:pretty}}
+.node.n-img.busy{animation:none;box-shadow:none}.n-img.busy .shot{box-shadow:0 0 0 2px var(--accent);animation:breathe 1.2s ease-in-out infinite}
+.res.warn.busy #what-score{color:var(--mute)}
+
+/* ===== Блоки 01–04: окно редактора + контурный номер шага (смесь А + В, 3.11) ===== */
+.blk-h{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--s3);align-items:end;margin-bottom:var(--s5)}
+.blk-h-l{grid-column:1 / span 6}
+.blk-h > .lead{grid-column:7 / span 6}
+.run-h .blk-h-l{grid-column:1 / span 6}
+.num{display:block;font:500 104px/.8 var(--f-mono);letter-spacing:-.06em;color:transparent;-webkit-text-stroke:1.5px var(--ink);margin-bottom:var(--s3)}
+.halves-txt .num{margin-bottom:var(--s3)}
+.win{position:relative;background:var(--surface);border-radius:24px;
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--ink) 10%,transparent),0 1px 2px rgba(21,23,28,.05),0 24px 48px -36px rgba(21,23,28,.28)}
+.win-bar{display:flex;align-items:center;gap:var(--s1);padding:12px 16px;border-bottom:1px solid var(--grid);background:var(--surface);border-radius:24px 24px 0 0}
+.win-dots{display:flex;gap:6px;margin-right:var(--s1)}.win-dots i{width:10px;height:10px;border-radius:50%;background:var(--grid)}
+.win-tab{font:500 13px/1 var(--f-text);padding:8px 12px;border-radius:8px;color:var(--mute)}
+.win-tab.is{background:var(--soft);color:var(--ink)}
+.win-bar .mono{margin-left:auto;color:var(--mute)}
+.win > .canvas{margin:40px}
+.halves .win{grid-column:5 / span 8}
+.halves-txt{grid-column:1 / span 4}
+[data-theme="dark"] .win{box-shadow:0 0 0 1px #2E2E35}
+@media (max-width:1199px){.halves .win{grid-column:5 / span 8}}
+@media (max-width:767px){
+  .blk-h{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s3);margin-bottom:var(--s4)}
+  .num{font-size:64px}
+  .win{border-radius:16px}.win-bar{border-radius:16px 16px 0 0;padding:10px 12px}
+  .win-tab:not(.is){display:none}
+  .win > .canvas{margin:24px 16px}
+  .halves .win{width:100%}
+}
+.blk-h h2,.halves-txt h2{text-wrap:balance}
+[data-theme="dark"] .win-dots i{background:#3A3A42}
+@media (max-width:767px){#g-run .recipe-node{width:100%}}
+/* окно держит отступ полотна внутри (иначе нижний отступ проваливается за край окна) */
+.win{display:flow-root}
+/* плашка о ноде — посередине между «Промптом» (слева, 216 px) и «Сверкой товара» (с 61 % ширины) */
+#what-panel{left:calc(108px + 30.5%);transform:translateX(-50%)}
+.canvas.v #what-panel{left:0;transform:none}
+/* заголовки блоков — одна левая колонка: номер → заголовок → пояснение (→ кнопка). Разнос «слева / справа» Алине не нравится (3.11) */
+.blk-h,.run-h.blk-h{display:flex;flex-direction:column;align-items:flex-start;gap:0;max-width:720px}
+.blk-h > .lead,.run-h .run-h-r{margin-top:var(--s3)}
+.blk-h > .lead{max-width:none}
+.run-h .run-h-r{gap:var(--s4)}
+.blk-h > .lead,.run-h .run-h-r .lead{max-width:560px;text-wrap:pretty}
+/* 01: две половины одной высоты — верх номера = верх окна, низ «начать заново» = низ окна */
+.halves{align-items:stretch}
+.halves-txt{display:flex;flex-direction:column;align-items:flex-start}
+.halves-txt .steps{margin-top:auto;padding-top:var(--s4);width:100%}
+.halves-txt .link-msg{min-height:2.7em}
+.halves-txt .link{margin-top:var(--s1);line-height:1}
+.halves-txt .num{margin-top:-.04em}
+@media (max-width:767px){.halves-txt .steps{margin-top:var(--s4);padding-top:0}}
+/* шапки блоков по правилам (3.11): без искусственной ширины — заголовок в одну строку, если помещается;
+   пояснение 20 px, каждая фраза с новой строки, по ширине заголовка */
+.blk-h,.run-h.blk-h{max-width:none}
+.blk-h .lead{font-size:20px;line-height:1.5;max-width:none!important;text-wrap:wrap}
+.blk-h h2{text-wrap:wrap}
+@media (max-width:767px){.blk-h .lead{font-size:16px}}
+.halves-txt .lead{text-wrap:balance}
+@media (max-width:767px){.blk-h h2,.blk-h .lead,.halves-txt h2{text-wrap:balance}}
+@media (max-width:767px){.halves-txt .lead{font-size:18px}}
+/* 01, исправление (3.11): текст — одна плотная колонка (отступы из шкалы), окно тянется под её высоту, а не текст под окно */
+.halves-txt .steps{margin-top:var(--s4);padding-top:0}
+.halves-txt .num{margin-top:0}
+.halves-txt .link{line-height:1;margin-top:var(--s1)}
+@media (min-width:768px){
+  .halves .win{display:flex;flex-direction:column}
+  .halves .win > .canvas{flex:1;height:auto;min-height:380px}
+}
+/* 03 — вертикальный блок: текст короче окна, группа текста стоит по центру высоты окна (не растягиваем — близость) */
+#swap .halves-txt{justify-content:center}
+#g-swap .node[data-id="prompt"]{width:190px}
+@media (min-width:768px){#swap .win > .canvas{flex:none;height:var(--h)}}
+@media (max-width:767px){#swap .halves-txt .lead{font-size:20px}}
+/* 01 и 03 — одно правило: по верху окна (3.11) */
+#swap .halves-txt{justify-content:flex-start}
+/* 04: кнопки в одном месте, в шапке блока; пометка «демонстрация» — в шапке окна */
+.run-btns{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
+.run-btns [hidden]{display:none}
+.btn-ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.btn-ghost:hover{box-shadow:inset 0 0 0 1.5px var(--ink),0 0 0 4px color-mix(in srgb,var(--accent) 35%,transparent)}
+.demo-tag{margin-left:auto;color:var(--mute)}
+.demo-tag b{font-weight:500;color:var(--on-accent);background:var(--accent);border-radius:999px;padding:3px 10px;margin-right:6px}
+@media (max-width:767px){.demo-tag{font-size:11px}.demo-tag b{display:inline-block;margin:0 0 4px}}
+/* ревью 3.11: шапка окна — название рецепта, без «вкладок», которые не нажимаются */
+.win-tab.is{background:none;padding:8px 4px;font-weight:600;color:var(--ink)}
+.win-hint{margin-left:auto;color:var(--mute)}
+@media (max-width:767px){.win-hint{display:none}}
+/* первый экран: подсказка о перетаскивании — под кнопкой «Собрать обратно», рядом с действием */
+#hint-hero{left:50%;right:auto;top:-56px;transform:translateX(-50%);white-space:nowrap}
+/* один кегль пояснений во всех блоках — 20 (было 18 и 20 — «чуть-чуть») */
+.halves-txt .lead{font-size:20px}
+@media (max-width:767px){.halves-txt .lead,.blk-h .lead{font-size:18px}}
+@media (max-width:767px){.halves-txt .lead,#swap .halves-txt .lead{font-size:22px}.blk-h .lead{font-size:16px}}
+/* 04: три примера + своё фото + «+» помещаются в один ряд */
+#g-run .in-node{width:260px}
+#g-run .products{flex-wrap:nowrap}
+#g-run .products button,#g-run .products .up,#g-run .products .own{width:40px;flex:none}
+@media (max-width:767px){#g-run .in-node{width:88%}}
+/* планшет 768–1199: полотна вертикальные (как на телефоне), половины 01 и 03 — друг под другом */
+@media (min-width:768px) and (max-width:1199px){
+  .halves{display:flex;flex-direction:column;align-items:stretch;gap:var(--s5)}
+  .halves .win,.halves-txt{width:100%}
+  .halves .win > .canvas{flex:none;height:var(--mh)}
+  .orbit-wrap.open{height:calc(var(--open-h,1240px))}
+  .canvas.v .node{width:30%}
+  .canvas.v .node[data-id="preset"],.canvas.v .node[data-id="brand"],.canvas.v .node[data-id="check"],.canvas.v .node[data-id="recipe"]{width:44%}
+  .canvas.v .node.res,.canvas.v .node.wide,.canvas.v .in-node{width:46%}
+  #g-run.v .out-node{width:100%}
+  .canvas.v .panel{left:0;width:100%;transform:none}
+}
+@media (min-width:768px) and (max-width:1199px){#swap .win > .canvas{height:var(--mh)}}
+/* 02: плашка о ноде — ровно по центру окна и компактнее (просьба Алины 3.11); «Сверка товара» — в верхнем ряду, чтобы плашка ни на что не налезала */
+#what-panel{left:50%;transform:translateX(-50%);width:400px;padding:var(--s3)}
+#what-panel h3{font-size:20px}
+#what-panel p{font-size:15px;line-height:1.45}
+.canvas.v #what-panel{left:0;transform:none;width:100%}
+#what-panel p.mono{font-size:12px;line-height:1.35}
+/* 02: плашка — как было (место между «Промптом» и «Сверкой», прежний размер), но по центру полотна по вертикали, ближе к нодам (Алина 3.11) */
+#what-panel{left:calc(108px + 30.5%);top:50%;bottom:auto;transform:translate(-50%,-50%);width:calc(19% + 216px);padding:var(--s3)}
+#what-panel h3{font-size:24px}
+#what-panel p{font-size:16px;line-height:1.5}
+#what-panel p.mono{font-size:12px;line-height:1.35}
+.canvas.v #what-panel{top:auto;bottom:0;left:0;transform:none;width:100%}
+#what-panel{transform:translateX(-50%)}
+.canvas.v #what-panel{transform:none}
+
+/* ===== UI-рецензия 3.11 ===== */
+/* 1. Кнопки: главная — насыщенный лайм без контура (решение Алины 3.11), второстепенная — тонкий серый контур */
+.btn{box-shadow:none}
+.btn:hover{box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 35%,transparent)}
+.btn-ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--mute)}
+.btn-ghost:hover{box-shadow:inset 0 0 0 1px var(--ink)}
+.btn[aria-disabled="true"]{box-shadow:none}
+/* 2. Кегли: моно — один размер 12; Onest — 14 / 16 / 20 / 24 (13, 15, 17 убраны) */
+.on .lab,.n-img .node-h b,.n-img .node-h .mono,.q li i,.tag,.demo-tag,.on-card .cd p{font-size:12px}
+.win-tab,.on-card .cd-h,.fm-card .fm-name{font-size:14px}
+.score,.state b,.drop-t,.fm-banner .fm-t b{font-size:16px}
+@media (max-width:767px){.on-card .cd p{font-size:12px}.demo-tag{font-size:12px}}
+/* 3. Скругления: 12 — ноды и картинки, 8 — всё внутреннее */
+.n-img .thumb,.n-img .shot,.on .ph{border-radius:12px}
+.fi,.fm .fi{border-radius:8px}
+/* 4. Переключатели светлее: дорожка с контуром, тёмный только бегунок */
+.sw{background:transparent;box-shadow:inset 0 0 0 1.5px var(--ink)}
+.sw::after{background:var(--ink)}
+.sw[aria-checked="false"]{background:transparent;box-shadow:inset 0 0 0 1.5px var(--off)}
+.sw[aria-checked="false"]::after{background:var(--off)}
+.n-dec .sw{background:transparent;box-shadow:inset 0 0 0 1.5px var(--on-accent)}
+.n-dec .sw::after{background:var(--on-accent)}
+/* 6. Первый экран: разобранное полотно — в таком же окне, как блоки ниже */
+.hero-bar{display:none}
+.hero-box{border-radius:24px;transition:background-color .4s,box-shadow .4s}
+.orbit-wrap.open .hero-box{background:var(--surface);box-shadow:0 0 0 1px color-mix(in srgb,var(--ink) 10%,transparent),0 1px 2px rgba(21,23,28,.05),0 24px 48px -36px rgba(21,23,28,.28)}
+.orbit-wrap.open .hero-bar{display:flex}
+.orbit-wrap.open #g-hero{margin:40px}
+[data-theme="dark"] .orbit-wrap.open .hero-box{box-shadow:0 0 0 1px #2E2E35}
+@media (max-width:1199px){.orbit-wrap.open #g-hero{margin:24px 16px}}
+/* 8. Пунктир «продукт → сверка» тише */
+.wire.ref{opacity:.4}
+/* UX: с чего начать в 01 — кружок «Продукта» мягко пульсирует; ошибки загрузки — красным */
+.link-canvas .port.hint{background:var(--accent);border-color:var(--ink);animation:hintp 1.4s ease-in-out infinite}
+@keyframes hintp{50%{box-shadow:0 0 0 7px color-mix(in srgb,var(--accent) 45%,transparent)}}
+.in-hint.bad{color:var(--danger)}
+#what-all{display:block;margin-top:var(--s2)}
+#what-all[hidden]{display:none}
+[data-theme="dark"] .btn:not(.btn-ghost){box-shadow:none}
+[data-theme="dark"] .btn:not(.btn-ghost):hover{box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 35%,transparent)}
+@media (max-width:767px){#run .win-tab{display:none}#run .demo-tag{margin-left:0}}
+
+/* ===== 04 · форматы как настоящая реклама (3.11, замечание Алины: «баннер ни о чём, текст на товаре») =====
+   Цвета «Севеи» из дизайн-системы сайта: ночь #0F1A38, бумага #F3EBDD, чернила #1F2A36. */
+.fm .fm-sub{font:400 11px/1.3 var(--f-mono);letter-spacing:.02em}
+/* сторис: фото на весь кадр, снизу ночное затемнение, текст белый — не на товаре */
+.fm-story .fi{background:#0F1A38}
+.fm-story .fi img{transform:none;object-position:50% 30%}
+.fm-story .fi::before{content:"";position:absolute;inset:45% 0 0;z-index:1;background:linear-gradient(180deg,rgba(15,26,56,0),rgba(15,26,56,.92) 55%)}
+.fm-story .fm-t{left:10px;right:10px;bottom:12px;z-index:2;color:#fff;gap:6px}
+.fm-story .fm-name{font-size:14px;line-height:1.15;font-weight:600}
+.fm-story .fm-sub{color:rgba(255,255,255,.75)}
+.fm-story .tag{background:var(--accent);color:var(--ink);border-radius:999px;padding:3px 8px}
+/* карточка: фото сверху, белая плашка снизу — без провала */
+.fm-card .fi{display:flex;flex-direction:column;background:#fff;box-shadow:inset 0 0 0 1px var(--grid)}
+.fm-card .fi img{position:relative;inset:auto;height:auto;flex:1;min-height:0;width:100%}
+.fm-card .fm-t{position:relative;left:auto;right:auto;bottom:auto;padding:10px 10px 12px;gap:2px;color:#1F2A36}
+.fm-card .fm-name{font-size:13px;line-height:1.2}
+.fm-card .fm-sub{color:#5A6573}
+/* баннер: ночной синий, слева текст и кнопка, справа фото растворяется в фоне */
+.fm-banner .fi{display:block;background:#0F1A38;color:#fff}
+.fm-banner .fi img{position:absolute;inset:0 0 0 auto;width:62%;height:100%;object-fit:cover;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 38%);mask-image:linear-gradient(90deg,transparent,#000 38%)}
+.fm-banner .fm-t{position:absolute;left:18px;top:0;bottom:0;width:52%;justify-content:center;padding:0;gap:8px;z-index:1}
+.fm-banner .fm-t b,.fm-banner .fm-name{font-size:20px;line-height:1.1;font-weight:600;letter-spacing:-.01em}
+.fm-banner .fm-sub{color:rgba(255,255,255,.7)}
+.fm-banner .fm-btn{margin-top:6px;background:#fff;color:#0F1A38}
+.fmts.own .fm-sub{display:none}
+.fm-banner .fm-t{color:#fff}
+.fm-story .fm-name{font-size:13px}
+/* сторис узкая: только метка и название, затемнение ниже флакона */
+.fmts{grid-template-columns:10.5fr 12fr 26fr}
+.fm-story .fm-sub{display:none}
+.fm-story .fm-name{font-size:12px}
+.fm-story .fi::before{inset:58% 0 0}
+.fm-story .fm-t{left:8px;right:8px;bottom:10px}
+@media (max-width:1199px){.fmts{grid-template-columns:9fr 12fr}}
+
+/* ===== 04 · форматы, вторая версия (3.11, замечание Алины: «затемнённые половины — дичь, лид не пропустит»)
+   Без затемнений и растворов: фото и текст стоят рядом. Всё по дизайн-системе «Севеи» (Бренд косметики\Сайт\Дизайн-система сайта (27.10).md):
+   бумага #F3EBDD, чернила #1F2A36, вторичный #5A6573, кнопка #1F2A36 / белый; название — Cormorant Garamond 500, как в логобуке. */
+.fm .fm-name{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;letter-spacing:0;color:#1F2A36}
+.fm .fm-sub{font:400 11px/1.3 var(--f-mono);color:#5A6573;letter-spacing:.02em}
+.fm .tag{background:none;color:#1F2A36;box-shadow:inset 0 0 0 1px #1F2A36;border-radius:999px;padding:2px 8px;font-size:11px}
+/* сторис: фото сверху, бумажная плашка снизу */
+.fm-story .fi{display:flex;flex-direction:column;background:#F3EBDD}
+.fm-story .fi::before{display:none}
+.fm-story .fi img{position:relative;inset:auto;flex:1;min-height:0;height:auto;width:100%;transform:none;object-position:50% 40%}
+.fm-story .fm-t{position:relative;left:auto;right:auto;bottom:auto;padding:10px 10px 12px;gap:6px;color:#1F2A36}
+.fm-story .fm-name{font-size:15px;line-height:1.05}
+.fm-story .fm-sub{display:block}
+/* карточка: фото сверху, белая плашка */
+.fm-card .fm-name{font-size:16px;line-height:1.05}
+/* баннер: половина — бумага с текстом, половина — фото */
+.fm-banner .fi{display:grid;grid-template-columns:1fr 1fr;background:#F3EBDD;color:#1F2A36}
+.fm-banner .fi img{position:relative;inset:auto;grid-column:2;grid-row:1;width:100%;height:100%;-webkit-mask-image:none;mask-image:none}
+.fm-banner .fm-t{position:relative;left:auto;top:auto;bottom:auto;width:auto;grid-column:1;grid-row:1;align-self:center;padding:0 16px 0 18px;gap:8px;color:#1F2A36}
+.fm-banner .fm-t b,.fm-banner .fm-name{font-size:22px;line-height:1.02;font-weight:500}
+.fm-banner .fm-sub{color:#5A6573}
+.fm-banner .fm-btn{margin-top:6px;background:#1F2A36;color:#fff}
+/* кнопки запуска — на полотне рецепта, в шапке окна */
+#run .win-bar .run-btns{margin-left:var(--s2);gap:var(--s1)}
+#run .win-bar .btn{padding:8px 16px;font-size:14px}
+@media (max-width:767px){#run .win-bar{flex-wrap:wrap;row-gap:var(--s1)}#run .win-bar .run-btns{margin-left:0;width:100%}}
+/* сторис отличается от карточки: фото на весь кадр, текст на бумажной плашке поверх фото (правило «текст на фото — на подложке») */
+.fm-story .fi{display:block}
+.fm-story .fi img{position:absolute;inset:0;width:100%;height:100%;object-position:50% 35%}
+.fm-story .fm-t{position:absolute;left:8px;right:8px;bottom:8px;padding:8px 8px 10px;background:#F3EBDD;border-radius:6px;gap:4px;z-index:2}
+.fm-story .fm-name{font-size:14px}
+.fm-story .tag{position:absolute;left:8px;top:8px;z-index:2;background:#F3EBDD;box-shadow:none}
+.fm-story .fm-sub{display:none} /* в узкой сторис — только название, плашка меньше закрывает товар */
+
+/* кнопки запуска — в ноде «Продукт»: выбрала продукт и тут же запустила (3.11, Алина не нашла кнопку справа) */
+#g-run .in-node .run-btns{flex-direction:column;align-items:stretch;gap:var(--s1);padding:0 12px 12px}
+#g-run .in-node .run-btns .btn{justify-content:center;padding:12px 16px;font-size:14px}
+
+/* ===== Цвет: зелёный вместо лайма (3.11, скилл «Цвет»: 4.13–4.15, 4.21–4.22, 4.25) =====
+   Кнопка — акцент с белым текстом, наведение — шаг темнее; шапки нод-решений и метки — светлый 50 + текстовый шаг;
+   тёмного текста на насыщенной заливке больше нет. Шкалы — scratchpad «Палитра-зелёные», записаны в «Разборе задания». */
+:root{--accent:#0F6B3E;--accent-hover:#165634;--on-accent:#FFFFFF;--accent-soft:#EDFAF1;--accent-line:#C2E9CF;--accent-text:#0F6B3E}
+.btn{background:var(--accent);color:var(--on-accent)}
+.btn:hover{background:var(--accent-hover);box-shadow:none}
+.btn-ghost,.btn-ghost:hover{background:transparent;color:var(--ink)}
+.n-dec .node-h{background:var(--accent-soft);color:var(--accent-text);border-bottom:1px solid var(--accent-line)}
+.n-dec .node-h .mono{color:var(--accent-text);opacity:.75}
+.n-dec .st,.n-dec.done .st{background:var(--accent-text)}
+.n-dec .sw{box-shadow:inset 0 0 0 1.5px var(--accent-text)}.n-dec .sw::after{background:var(--accent-text)}
+.q li.done i,.idea-tag,.node-b .idea-tag,.demo-tag b{background:var(--accent-soft);color:var(--accent-text)}
+.tag{background:var(--accent-soft);color:var(--accent-text)}
+.on-card .cd-h{background:var(--accent-soft);color:var(--accent-text)}
+.presets button[aria-checked="true"]::after{background:#fff;border-color:#fff}
+/* ===== 04 · форматы, третья версия (3.11): у каждого формата своя сцена из Figma AI, средство — настоящий файл «Севеи».
+   В сценах оставлено пустое небо — текст стоит прямо там, без плашек и затемнений. Ночные сцены — белый текст, утренняя (крем для рук) — чернила. */
+.fm-story .fi,.fm-banner .fi{display:block;background:#0F1A38}
+.fm-story .fi img,.fm-banner .fi img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;-webkit-mask-image:none;mask-image:none;transform:none}
+.fm-story .fm-t{position:absolute;left:10px;right:10px;top:34px;bottom:auto;padding:0;background:none;gap:4px;color:#fff}
+.fm-story .tag{position:absolute;left:10px;top:10px;z-index:2;background:none;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.7)}
+.fm-story .fm-name{font-size:15px;line-height:1.05;color:#fff}
+.fm-banner .fm-t{position:absolute;left:18px;top:0;bottom:0;width:44%;justify-content:center;padding:0;gap:8px;color:#fff}
+.fm-banner .fm-name{font-size:22px;line-height:1.02;color:#fff}
+.fm-banner .fm-sub{color:rgba(255,255,255,.75)}
+.fm-banner .fm-btn{background:#fff;color:#0F1A38}
+.fmts.tone-light .fm-story .fm-name,.fmts.tone-light .fm-banner .fm-name{color:#1F2A36}
+.fmts.tone-light .fm-banner .fm-sub{color:#5A6573}
+.fmts.tone-light .fm-story .tag{color:#1F2A36;box-shadow:inset 0 0 0 1px rgba(31,42,54,.6)}
+.fmts.tone-light .fm-banner .fm-btn{background:#1F2A36;color:#fff}
+.fmts.own .fm-story .fi,.fmts.own .fm-banner .fi{background:#F3EBDD}
+.fm-card .fi img{object-position:50% 72%} /* в карточке видно средство вместе с подиумом */
