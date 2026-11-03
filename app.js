@@ -95,6 +95,17 @@ class Graph {
     const step = () => { this.draw(); if (performance.now() < end) this._raf = requestAnimationFrame(step); };
     step();
   }
+  // ноды появляются по ходу сигнала: сначала входы, потом решения, в конце результат
+  hideNodes() { if (!reduce) this.el.classList.add('pre'); }
+  appear(gap = 160) {
+    if (!this.el.classList.contains('pre')) return 0;
+    const depth = id => { const inc = this.edges.filter(e => e.b === id); return inc.length ? 1 + Math.max(...inc.map(e => depth(e.a))) : 0; };
+    let max = 0;
+    Object.entries(this.nodes).forEach(([id, n]) => { const d = depth(id); max = Math.max(max, d); setTimeout(() => n.classList.add('in'), d * gap); });
+    const total = max * gap + 500;
+    setTimeout(() => { this.el.classList.remove('pre'); Object.values(this.nodes).forEach(n => n.classList.remove('in')); }, total);
+    return total;
+  }
   // провода прорисовываются
   drawIn(gap = 140) {
     this.draw();
@@ -200,7 +211,7 @@ const INFO = {
   preset: ['Пресет', 'Стиль съёмки: свет, фон, формат 3:4 и качество 4K.', 'Получается обычное фото на телефон: плоский свет, серый фон.'],
   brand:  ['Бренд-директор', 'Сверяет кадр с брендом: цвета, композицию, стилистику, лишние детали.', 'Цвета и реквизит уходят в чужой стиль, и никто этого не замечает.'],
   check:  ['Сверка товара', 'Сравнивает результат с исходным фото: форму, крышку, материал. Новая нода, моё предложение для продукта.', 'Нейросеть подменяет сам товар: вместо вашей банки в кадре другое средство.'],
-  res:    ['Результат', 'Готовая картинка. Она меняется, как только меняется любая нода выше.', 'Это выход рецепта, его не выключают.']
+  res:    ['Результат', 'Готовая картинка. Она меняется, как только меняется любая нода выше.', 'Это выход сценария, его не выключают.']
 };
 const on = { prod: true, prompt: true, preset: true, brand: true, check: true };
 const wImg = document.getElementById('what-img'), wState = document.getElementById('what-state');
@@ -255,7 +266,8 @@ wAll.addEventListener('click', () => {
   what.el.querySelectorAll('.sw').forEach(sw => { const n = sw.closest('.node'); on[n.dataset.id] = true; sw.setAttribute('aria-checked', true); n.classList.remove('off'); });
   syncAll(); recompute();
 });
-onSeen(what.el, () => { what.drawIn(); setTimeout(() => what.pulse(), 900); });
+what.hideNodes();
+onSeen(what.el, () => setTimeout(() => { what.drawIn(); setTimeout(() => what.pulse(), 900); }, what.appear()));
 // плашка о ноде — посередине по высоте между низом верхнего ряда (Пресет, Бренд-директор) и низом полотна: воздух сверху = снизу
 const wPanel = document.getElementById('what-panel');
 function placePanel() {
@@ -282,7 +294,8 @@ swap.el.querySelectorAll('.presets button').forEach(b => b.addEventListener('cli
   sCap.textContent = b.textContent.trim() + ' · 3:4';
   busy = false;
 }));
-onSeen(swap.el, () => { swap.drawIn(); setTimeout(() => swap.pulse(), 900); });
+swap.hideNodes();
+onSeen(swap.el, () => setTimeout(() => { swap.drawIn(); setTimeout(() => swap.pulse(), 900); }, swap.appear()));
 
 // ---------- 4. Кульминация: запустить рецепт ----------
 // Ноды по очереди: в очереди → работает → готово. Данные идут по цепочке,
@@ -302,7 +315,7 @@ function runReset() {
   rSteps.forEach(li => setStep(li, 'wait'));
   rFrames.forEach(f => f.classList.add('empty'));
   rSt.textContent = 'ждёт запуска'; rCount.textContent = '0 из 3';
-  rGo.textContent = 'Запустить рецепт';
+  rGo.textContent = 'Запустить сценарий';
   // новый запуск или другой продукт — главной снова становится «Запустить»
   rGo.classList.remove('btn-ghost'); rCta.hidden = true; rGo.parentElement.prepend(rGo);
 }
@@ -380,13 +393,20 @@ const inNode = run.nodes.prod;
 ['dragleave', 'drop'].forEach(t => inNode.addEventListener(t, e => { e.preventDefault(); inNode.classList.remove('over'); }));
 inNode.addEventListener('drop', e => addOwn(e.dataTransfer.files[0]));
 runReset();
-onSeen(run.el, () => run.drawIn());
+run.hideNodes();
+onSeen(run.el, () => setTimeout(() => run.drawIn(), run.appear()));
 
 // ---------- 1б. Соедините ноды сами ----------
 // Тянуть провод от выхода (справа) к входу (слева). На телефоне — нажать выход, потом вход.
 const link = new Graph(document.getElementById('g-link'));
-const NEED = ['prod>preset', 'preset>brand', 'brand>res'];
-const NAMES = { prod: 'Продукт', preset: 'Пресет', brand: 'Бренд-директор', res: 'Результат' };
+const NEED = ['prod>preset', 'prompt>preset', 'preset>brand', 'brand>res'];
+const NAMES = { prod: 'Продукт', prompt: 'Промпт', preset: 'Пресет', brand: 'Бренд-директор', res: 'Результат' };
+// что изменилось после соединения — человек видит смысл шага, а не «данные получены»
+const WHY = {
+  'prod>preset': 'есть! Товар получил стиль съёмки. Теперь добавьте описание кадра: Промпт → Пресет',
+  'prompt>preset': 'есть! Стиль знает, что в кадре. Дальше проверка: Пресет → Бренд-директор',
+  'preset>brand': 'есть! Кадр проверят по правилам бренда. Осталось: Бренд-директор → Результат'
+};
 const done = new Set();
 const lMsg = document.getElementById('link-msg'), lSt = document.getElementById('link-st');
 const lImg = document.getElementById('link-img'), lState = document.getElementById('link-state');
@@ -399,7 +419,7 @@ function linkReset() {
   steps.forEach((s, i) => { s.classList.remove('done'); s.classList.toggle('next', i === 0); });
   link.nodes.prod.querySelector('.port.out').classList.add('hint'); // с чего начать — кружок «Продукта» мягко пульсирует
   lState.className = 'state show'; lSt.textContent = 'пусто';
-  say(phone.matches ? 'нажмите кружок «Продукта», потом кружок «Пресета»' : 'начните с\u00a0«Продукта»');
+  say(phone.matches ? 'нажмите кружок «Продукта», потом кружок «Пресета»' : 'потяните провод от кружка «Продукта» к кружку «Пресета»');
 }
 async function tryConnect(a, b) {
   const key = a + '>' + b, next = NEED[done.size];
@@ -416,11 +436,11 @@ async function tryConnect(a, b) {
   if (steps[done.size]) steps[done.size].classList.add('next');
   link.draw();
   await link.pulse([a]);
-  if (done.size < NEED.length) return say(`есть! ${NAMES[b]} получил данные`, 'good');
+  if (done.size < NEED.length) return say(WHY[key], 'good');
   lState.classList.remove('show'); lSt.textContent = 'собираю…';
   await regen(lImg.parentElement, lImg, IMG('studio'));
   lSt.textContent = 'готово';
-  say('готово: вы собрали workflow. Его можно сохранить как рецепт и повторять', 'good');
+  say('готово: вы собрали сценарий. Его можно сохранить и повторять для любого товара', 'good');
 }
 let dragFrom = null, temp = null, armed = null;
 const portXY = p => { const r = p.getBoundingClientRect(), c = link.el.getBoundingClientRect(); return [r.left + r.width / 2 - c.left, r.top + r.height / 2 - c.top]; };
@@ -438,6 +458,7 @@ link.el.querySelectorAll('.port.out').forEach(p => p.addEventListener('pointerdo
   };
   const up = e => {
     removeEventListener('pointermove', move); removeEventListener('pointerup', up);
+    dragFrom = null; // провод отпустили — подсказка следующего шага снова видна
     temp.remove(); if (last) last.classList.remove('target');
     const t = document.elementFromPoint(e.clientX, e.clientY)?.closest('#g-link .port.in');
     const a = p.closest('.node').dataset.id;
@@ -468,8 +489,26 @@ link.el.querySelectorAll('.port').forEach(p => {
     say(`${name} выбран. Теперь выберите вход следующей ноды`);
   });
 });
+// подсказка жеста: пунктир от выхода к входу следующего шага, по нему едет точка «тяни отсюда сюда»
+const ghost = document.createElementNS(NS, 'path'), finger = document.createElementNS(NS, 'circle');
+ghost.setAttribute('class', 'ghost-wire'); finger.setAttribute('class', 'ghost-dot'); finger.setAttribute('r', 5);
+link.svg.append(ghost, finger);
+(function ghostLoop(now) {
+  const next = NEED[done.size], show = !!next && !dragFrom && !armed;
+  ghost.classList.toggle('show', show); finger.classList.toggle('show', show && !reduce);
+  if (show) {
+    const [a, b] = next.split('>');
+    ghost.setAttribute('d', link.path({ a, b }));
+    const len = ghost.getTotalLength(), t = (now % 2000) / 1600; // 1,6 с едет, 0,4 с ждёт у входа
+    const pt = ghost.getPointAtLength(len * (1 - Math.pow(1 - Math.min(t, 1), 3)));
+    finger.setAttribute('cx', pt.x); finger.setAttribute('cy', pt.y);
+  }
+  requestAnimationFrame(ghostLoop);
+})(0);
 document.getElementById('link-reset').addEventListener('click', linkReset);
 linkReset();
+link.hideNodes();
+onSeen(link.el, () => link.appear());
 
 // Оптическое выравнивание половин «01»: верх контура цифры «01» = верх окна, низ подчёркивания «начать заново» = низ окна.
 // Считаем по метрикам шрифта, а не по рамке строки (у крупной цифры над контуром пустое место).

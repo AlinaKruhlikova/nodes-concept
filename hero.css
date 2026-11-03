@@ -69,7 +69,7 @@
 @media (max-width:767px){
   #hero{min-height:760px}
   #hero .wall{gap:var(--s1);padding:0 var(--s1)}#hero .col{gap:var(--s1)}
-  #hero .pf{padding:var(--s4) var(--s3)}#hero .pf .lead{font-size:17px}#hero .pf .lead br{display:none}
+  #hero .pf{padding:var(--s4) var(--s3)}#hero .pf h1{font-size:32px}#hero .pf .lead{font-size:17px}#hero .pf .lead br{display:none}
   #hero .pb{gap:var(--s2);padding:0 6px 0 var(--s2);justify-content:space-between}#hero .pb b{font-size:14px;overflow:hidden;text-overflow:ellipsis}#hero .pb .mono{display:none}
   #hero .n{width:132px}#hero .n-h{font-size:12px;padding:7px 8px}#hero .n-h .mono{display:none}#hero .n-b{padding:8px;font-size:12px}#hero .n .im{margin:6px}
   #hero .swp button{width:28px;height:28px}

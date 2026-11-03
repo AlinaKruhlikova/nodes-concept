@@ -33,7 +33,7 @@ function buildWall() {
     const col = document.createElement('div'); col.className = 'col'; wall.appendChild(col);
     const mine = keys.filter((_, i) => i % n === c);
     [...mine, ...mine, ...mine, ...mine].forEach((k, j) => col.insertAdjacentHTML('beforeend',
-      `<button class="tile" type="button" data-s="${k}" aria-label="Рецепт: ${P[S[k][0]][1]}, ${S[k][1]}"><img src="img/sevea/w/${k}.webp" alt="" decoding="async"><span class="tg">${FMT[(j + c) % 4]}</span></button>`));
+      `<button class="tile" type="button" data-s="${k}" aria-label="Сценарий:${P[S[k][0]][1]}, ${S[k][1]}"><img src="img/sevea/w/${k}.webp" alt="" decoding="async"><span class="tg">${FMT[(j + c) % 4]}</span></button>`));
     cols.push({ el: col, y: -(c * 130) - 300, v: (c % 2 ? .24 : -.24) * (1 + (c % 3) * .12) });
   }
 }
@@ -118,7 +118,7 @@ $('r-swap').addEventListener('click', e => {
 });
 // в рецепте кнопка полоски ведёт обратно к стене — одна кнопка вместо двух
 const pbHint = $('pb-hint'), pbBtn = $('pb-btn');
-const barText = on => { pbHint.innerHTML = on ? 'рецепт одной картинки из&nbsp;стены' : 'наведите&nbsp;— покажем рецепт, нажмите&nbsp;— разберём';
+const barText = on => { pbHint.innerHTML = on ? 'сценарий одной картинки из&nbsp;стены' : 'наведите&nbsp;— покажем сценарий, нажмите&nbsp;— разберём';
   pbBtn.textContent = on ? (phone() ? 'Назад' : 'Все материалы') : (phone() ? 'Разобрать' : 'Разобрать картинку'); };
 barText(false);
 function open(tile) {
