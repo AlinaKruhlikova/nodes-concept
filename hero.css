@@ -52,7 +52,7 @@
 #hero .res{width:auto;display:flex;flex-direction:column;overflow:hidden}
 #hero .res .n-h{flex:none}
 #hero .res .pic{flex:1;position:relative;overflow:hidden}
-#hero .res .pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .35s}
+#hero .res .pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .35s;filter:none;transform:none} /* общее .gen img размывает — в первом экране пересборку показывает только полоса скана */
 #hero .res .pic::after{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:var(--accent);box-shadow:0 0 12px var(--accent);opacity:0}
 #hero .res.gen .pic::after{opacity:1;animation:hscan .9s linear}
 @keyframes hscan{from{transform:translateY(0)}to{transform:translateY(var(--ph,400px))}}

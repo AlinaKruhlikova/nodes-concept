@@ -116,7 +116,8 @@ $('r-swap').addEventListener('click', e => {
   // сигнал проходит сценарий, и картинка пересобирается
   setTimeout(() => { const img = $('r-img'), res = N.res; res.style.setProperty('--ph', res.querySelector('.pic').offsetHeight + 'px');
     res.classList.remove('gen'); void res.offsetWidth; res.classList.add('gen'); img.style.opacity = 0;
-    setTimeout(() => { img.src = `img/sevea/${scene}.webp`; img.alt = P[S[scene][0]][1] + ', ' + S[scene][1]; img.style.opacity = 1; $('r-score').textContent = score(scene); }, reduce ? 0 : 300); }, reduce ? 0 : 900);
+    setTimeout(() => { img.src = `img/sevea/${scene}.webp`; img.alt = P[S[scene][0]][1] + ', ' + S[scene][1]; img.style.opacity = 1; $('r-score').textContent = score(scene);
+      setTimeout(() => res.classList.remove('gen'), reduce ? 0 : 700); }, reduce ? 0 : 300); }, reduce ? 0 : 900); // снимаем «генерацию», иначе картинка остаётся размытой
 });
 // в сценарии кнопка полоски ведёт обратно к стене — одна кнопка вместо двух
 const pbHint = $('pb-hint'), pbBtn = $('pb-btn');
@@ -126,6 +127,7 @@ barText(false);
 function open(tile) {
   const o = hero.getBoundingClientRect(), b = tile.getBoundingClientRect();
   from = { el: tile, x: b.left - o.left, y: b.top - o.top, w: b.width, h: b.height };
+  N.res.classList.remove('gen');
   clearHover(); fill(tile.dataset.s); mode = 'recipe'; rTo = 1; touched = true; tile.style.visibility = 'hidden'; barText(true);
   $('r-score').textContent = '—';
 }
